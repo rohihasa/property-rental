@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  react-frontend:
+    build:
+      context: ../react-frontend
+    container_name: react-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - springboot-backend
+    networks:
+      - backend
+
+  springboot-backend:
+    build:
+      context: ../springboot-backend
+    container_name: springboot-backend
+    depends_on:
+      - mongo-db
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+
+networks:
+  backend:
