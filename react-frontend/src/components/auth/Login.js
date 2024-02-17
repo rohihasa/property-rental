@@ -1,16 +1,60 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
-import styles from "./login.styles.module.css";
 import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Box,
+  CircularProgress,
+} from "@material-ui/core";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    width: "100vw",
+    backgroundImage: `url(${require("../../static/images/property-background.png")})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  formContainer: {
+    padding: theme.spacing(4),
+    backgroundColor: "rgba(255, 255, 255, 1)", // Updated transparency value
+    borderRadius: theme.spacing(2),
+    boxShadow: theme.shadows[3],
+  },
+  formTitle: {
+    marginBottom: theme.spacing(2),
+  },
+  formInput: {
+    marginBottom: theme.spacing(2),
+  },
+  formButton: {
+    marginTop: theme.spacing(2),
+  },
+  error: {
+    color: "red",
+    marginBottom: theme.spacing(2),
+  },
+}));
 
 function Login() {
+  const classes = useStyles();
+
   const [data, setData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
-  const headers = { 
-    'Content-Type': 'application/json',
-  }
+  const [loading, setLoading] = useState(false);
+  const headers = {
+    "Content-Type": "application/json",
+  };
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
@@ -18,13 +62,11 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      console.log("hello")
-      console.log(data)
       const url = "http://localhost:8080/api/auth/signin";
-      const { data: res } = await axios.post(url, data,{headers: headers});
-      
-      console.log(res)
+      const { data: res } = await axios.post(url, data, { headers: headers });
+
       localStorage.setItem("token", res.data);
       window.location = "/";
     } catch (error) {
@@ -36,47 +78,59 @@ function Login() {
         setError(error.response.data.message);
       }
     }
+    setLoading(false);
   };
+
   return (
-    <div className={styles.login_container}>
-      <div className={styles.login_form_container}>
-        <div className={styles.left}>
-          <form className={styles.form_container} onSubmit={handleSubmit}>
-            <h1>Login to Your Account</h1>
-            <input
-              type="username"
-              placeholder="username"
-              name="username"
-              onChange={handleChange}
-              value={data.username}
-              required
-              className={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              onChange={handleChange}
-              value={data.password}
-              required
-              className={styles.input}
-            />
-            {error && <div className={styles.error_msg}>{error}</div>}
-            <button type="submit" className={styles.green_btn}>
-              Sing In
-            </button>
-          </form>
-        </div>
-        <div className={styles.right}>
-          <h1>New Here ?</h1>
-          <Link to="/signup">
-            <button type="button" className={styles.white_btn}>
-              Sing Up
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
+    <Container className={classes.container}>
+      <Grid container justify="center">
+        <Grid item xs={12} sm={6} md={4}>
+          <Box className={classes.formContainer}>
+            <Typography variant="h5" className={classes.formTitle}>
+              Login to Your Account
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                type="username"
+                label="Username"
+                name="username"
+                onChange={handleChange}
+                value={data.username}
+                required
+                fullWidth
+                className={classes.formInput}
+              />
+              <TextField
+                type="password"
+                label="Password"
+                name="password"
+                onChange={handleChange}
+                value={data.password}
+                required
+                fullWidth
+                className={classes.formInput}
+              />
+              {error && (
+                <Typography className={classes.error}>{error}</Typography>
+              )}
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                className={classes.formButton}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} /> : "Sign In"}
+              </Button>
+            </form>
+            <Typography variant="body1" align="center">
+              New Here? <Link to="/signup">Sign Up</Link>
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
