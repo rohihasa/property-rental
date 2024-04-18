@@ -1,4 +1,4 @@
-package com.app.propertyrental.main.models.user;
+package com.app.propertyrental.main.models;
 
 
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "paymentMethods")
+@Document(collection = "payment")
 public class PaymentMethods {
     @Id
     private String id;

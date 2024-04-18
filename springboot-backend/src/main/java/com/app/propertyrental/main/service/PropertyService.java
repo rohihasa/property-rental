@@ -1,0 +1,45 @@
+package com.app.propertyrental.main.service;
+
+import com.app.propertyrental.main.models.Complaint;
+import com.app.propertyrental.main.models.property.Property;
+import com.app.propertyrental.main.models.property.PropertyDetails;
+import com.app.propertyrental.main.payload.response.FiltersResponse;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+
+public interface PropertyService {
+
+    ResponseEntity<Property> getAllProperties(double minPrice, double maxPrice, String location);
+
+    ResponseEntity<Property> createProperty(Property property);
+
+    ResponseEntity<Property> updateProperty(String propertyId, Property property);
+
+    ResponseEntity<String> updateVerificationStatus(String propertyId, Boolean status);
+
+    ResponseEntity<PropertyDetails> getPropertyTerms(String propertyId);
+
+    ResponseEntity<PropertyDetails> updatePropertyTerms(String propertyId, PropertyDetails propertyDetails);
+
+    ResponseEntity<Property> getPropertyById(String propertyId);
+    ResponseEntity<List<String>> getLocations();
+
+    ResponseEntity<FiltersResponse> getFilters();
+
+    ResponseEntity<String> applyForProperty(String propertyId);
+
+    ResponseEntity<List<Complaint>> getComplaints(String propertyId);
+
+    ResponseEntity<String> createComplaint(String propertyId, Complaint complaint);
+
+    ResponseEntity<String> updateComplaintStatus(String propertyId, String complaintId, String status);
+
+    ResponseEntity<String> sendMessase(String propertyId, String message);
+
+    ResponseEntity<List<Property>> getOwnerProperties();
+
+
+
+
+}

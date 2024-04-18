@@ -1,4 +1,4 @@
-package com.app.propertyrental.main.models.user;
+package com.app.propertyrental.main.models.property;
 
 
 
@@ -11,10 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "address")
 public class Address {
-    @Id
-    private String id;
     private String address;
     private String city;
     private String state;

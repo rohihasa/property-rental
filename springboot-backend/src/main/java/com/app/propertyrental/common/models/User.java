@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -36,6 +37,22 @@ public class User {
 
   @DBRef
   private Set<Role> roles = new HashSet<>();
+
+  private boolean verified;
+
+  private AdditionalDetails additionalDetails;
+
+  private String profileImage;
+
+  private List<String> savedProperties;
+
+  private List<String> ownedProperties;
+
+  private ContactDetails contactDetails;
+
+  private String identityProof;
+
+  private String creditReport;
 
     public User(String username, String email, String password) {
         this.username = username;

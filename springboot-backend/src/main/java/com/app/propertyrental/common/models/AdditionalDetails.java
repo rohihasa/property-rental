@@ -1,6 +1,5 @@
 package com.app.propertyrental.common.models;
 
-import com.app.propertyrental.main.models.user.ContactDetails;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-        public ResponseEntity<?> registerUser(SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(SignupRequest signUpRequest) {
 
 
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -81,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        user.setVerified(true);
                         roles.add(adminRole);
 
                         break;
@@ -88,47 +89,49 @@ public class AuthServiceImpl implements AuthService {
                         Role RecruiterRole = roleRepository.findByName(ERole.ROLE_OWNER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(RecruiterRole);
+                        user.setVerified(false);
                         break;
 
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        user.setVerified(true);
                         roles.add(userRole);
                 }
             });
         }
 
         user.setRoles(roles);
-        var savedUser = userRepository.save(user);
-        //TODO : Create Profile
-//        userService.createProfile(signUpRequest,savedUser.getId());
+        user.setAdditionalDetails(signUpRequest.getAdditionalDetails());
+        user.setContactDetails(signUpRequest.getContactDetails());
+       userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-
-
     }
 
     @Override
-public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        User user = userRepository.findByEmail(loginRequest.getEmail()).get();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        System.out.println(jwtCookie);
 
-    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-    System.out.println(jwtCookie);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        HttpHeaders headers = new HttpHeaders();
+        return ResponseEntity.ok().header("X-JWT-Token", jwtCookie.toString())
+                .body(new UserInfoResponse(
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        roles.get(0), user.isVerified()));
+    }
 
-    List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
-    HttpHeaders headers=new HttpHeaders();
-    return ResponseEntity.ok().header("X-JWT-Token", jwtCookie.toString())
-            .body(new UserInfoResponse(
-                    userDetails.getId(),
-                    userDetails.getUsername(),
-                    userDetails.getEmail(),
-                    roles.get(0)));
-}
+
 }
