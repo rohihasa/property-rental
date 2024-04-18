@@ -13,10 +13,7 @@ import java.util.List;
 @Data
 public class ReportResponse {
     private ContactDetails contactDetails;
-    private List<DocumentDetail> documentDetails;
+    private String idProof;
+    private String creditReport;
 }
 
- class DocumentDetail{
-    private String id;
-    private String name;
-}

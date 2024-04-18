@@ -8,6 +8,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,11 +17,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Transaction {
     @Id
     private String id;
-    private ObjectId applicationId;
-    private String contractId;
+    private ObjectId propertyId;
     private ObjectId paymentMethod;
     private String paymentStatus;
-    private String paymentAmount;
+    private double paymentAmount;
+    private Date paymentDate;
     private double adminCommission;
-
 }

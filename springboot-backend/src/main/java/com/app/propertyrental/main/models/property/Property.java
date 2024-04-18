@@ -18,7 +18,7 @@ import java.util.List;
 public class Property {
     @Id
     private String id;
-    private ObjectId owner;
+    private ObjectId ownerId;
     private String name;
     private String description;
     private Integer bathrooms;

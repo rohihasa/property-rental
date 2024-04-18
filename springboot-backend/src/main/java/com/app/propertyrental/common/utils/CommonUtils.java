@@ -5,6 +5,8 @@ import org.bson.types.ObjectId;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 
 @Service
 public class CommonUtils {
@@ -24,5 +26,9 @@ public class CommonUtils {
         String role= ((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAuthorities().toString();
         System.out.println("roleeee:"+role);
         return role;
+    }
+
+    public Date getCurrentDate() {
+        return new Date();
     }
 }

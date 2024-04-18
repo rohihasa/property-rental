@@ -19,12 +19,12 @@ public class Application {
     private String id;
     private ObjectId userId;
     private ObjectId propertyId;
-    private String status;
+    private ApplicationStatus status;
     private String message;
     private Date createdAt;
     private Date updatedAt;
     private Date moveInDate;
     private String emergencyContact;
     private String employmentDetails;
-    private byte[] creditReport;
+    private ObjectId creditReport;
 }

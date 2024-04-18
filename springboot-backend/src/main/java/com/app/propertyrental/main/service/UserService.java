@@ -1,7 +1,7 @@
 package com.app.propertyrental.main.service;
 
 import com.app.propertyrental.common.models.User;
-import com.app.propertyrental.main.models.Notifications;
+import com.app.propertyrental.main.models.Notification;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public interface UserService {
 
     ResponseEntity<?> updateProfile(User user);
 
-    ResponseEntity<List<Notifications>> getNotificationsForUser();
+    ResponseEntity<List<Notification>> getNotificationsForUser();
 
     ResponseEntity<ReportResponse> getReportForUser(String id);
 

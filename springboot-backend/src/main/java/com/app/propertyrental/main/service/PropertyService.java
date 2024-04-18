@@ -3,6 +3,7 @@ package com.app.propertyrental.main.service;
 import com.app.propertyrental.main.models.Complaint;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.models.property.PropertyDetails;
+import com.app.propertyrental.main.payload.request.ApplicationRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface PropertyService {
 
-    ResponseEntity<Property> getAllProperties(double minPrice, double maxPrice, String location);
+    ResponseEntity<List<Property>> getAllProperties(double minPrice, double maxPrice, String location);
 
     ResponseEntity<Property> createProperty(Property property);
 
@@ -27,13 +28,13 @@ public interface PropertyService {
 
     ResponseEntity<FiltersResponse> getFilters();
 
-    ResponseEntity<String> applyForProperty(String propertyId);
+    ResponseEntity<String> applyForProperty(ApplicationRequest applicationRequest);
 
     ResponseEntity<List<Complaint>> getComplaints(String propertyId);
 
     ResponseEntity<String> createComplaint(String propertyId, Complaint complaint);
 
-    ResponseEntity<String> updateComplaintStatus(String propertyId, String complaintId, String status);
+    ResponseEntity<String> updateComplaintStatus(String complaintId, String status);
 
     ResponseEntity<String> sendMessase(String propertyId, String message);
 

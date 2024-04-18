@@ -1,0 +1,13 @@
+From: {{sender_name}} <{{sender_email}}>
+To: {{recipient_name}} <{{recipient_email}}>
+
+Subject: Great Deals Await!
+
+Hello {{recipient_name}},
+
+We're excited to let you know that we've got some great deals waiting for you!
+Visit our website at www.example.com to check out the latest offers.
+
+Best regards,
+Your Company
+=============================================================================================

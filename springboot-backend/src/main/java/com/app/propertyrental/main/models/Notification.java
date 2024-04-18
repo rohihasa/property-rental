@@ -5,19 +5,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
+@Document(collection = "notifications")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "notifications")
-public class Notifications {
+public class Notification {
+    @Id
     private String id;
     private ObjectId senderId;
     private ObjectId receiverId;
     private String message;
     private String type;
-    private String status;
-    private String createdAt;
-    private String updatedAt;
+    private Boolean isRead;
+    private Date createdAt;
+
 }

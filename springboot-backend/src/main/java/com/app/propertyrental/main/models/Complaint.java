@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,6 +23,6 @@ public class Complaint {
     private String description;
     private Boolean isResolved;
     private List<String> images;
-    private String createdAt;
-    private String updatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 }
