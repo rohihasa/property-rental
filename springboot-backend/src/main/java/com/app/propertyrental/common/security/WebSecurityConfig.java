@@ -96,7 +96,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/doc/**").permitAll()
-//                                .requestMatchers("/*/**").permitAll()
+                                .requestMatchers("/*/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 
