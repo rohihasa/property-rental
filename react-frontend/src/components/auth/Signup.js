@@ -4,161 +4,249 @@ import {
   TextField,
   Button,
   Typography,
-  Container,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
+  Box,
+  Card,
+  CardContent,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
+import UserService from "../../services/UserService";
 
 const useStyles = makeStyles((theme) => ({
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: theme.spacing(6),
-    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-    borderRadius: theme.spacing(2),
-    backgroundColor: "rgba(255, 255, 255, 1)",
-  },
-  container: {
+  root: {
+    backgroundImage:`url(${require("../../static/images/bg.png")})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "100%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    width: "100vw",
-    backgroundImage: `url(${require("../../static/images/property-background.png")})`,
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
   },
-  input: {
-    marginBottom: theme.spacing(2),
-  },
-  error: {
-    color: "red",
-    marginBottom: theme.spacing(2),
-  },
-  button: {
-    marginTop: theme.spacing(2),
-  },
-  title: {
-    marginBottom: theme.spacing(2),
-    color: "#333",
-    fontWeight: "bold",
-  },
-  roleLabel: {
-    marginBottom: theme.spacing(1),
-    color: "#555",
-  },
-  link: {
-    color: "#007bff",
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "underline",
-    },
+  card: {
+    width: "60%",
+    maxWidth: 800,
   },
 }));
 
 const Signup = () => {
   const classes = useStyles();
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    user: "",
-  });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
+  const [loading,setLoading]=useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    role: "",
+    password: "",
+    additionalDetails: {
+      firstName: "",
+      lastName: "",
+      contactDetails: {
+        phoneNumber: "",
+        secondaryPhone: "",
+        address: {
+          address: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          country: "",
+        },
+        city: "",
+      },
+    },
+  });
 
   const handleSubmit = async (e) => {
-    // Define the setError function
-
+    console.log(data);
     e.preventDefault();
-    try {
-      const url = "http://localhost:8080/api/users";
-      const { data: res } = await axios.post(url, data);
-      navigate("/login");
-      console.log(res.message);
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setError(error.response.data.message);
-      }
-    }
+    setError("");
+    setLoading(true);
+    UserService.userSignup(data)
+      .then((response) => {
+        setLoading(false);
+        alert("Account created successfully"); // Show a popup
+        navigate("/login"); // Navigate to "/signin"
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+  };
+
+  const handleChange = (path, value) => {
+    setData((prevState) => {
+      const newState = { ...prevState };
+      let keyPath = path.split(".");
+      let lastKey = keyPath.pop();
+      keyPath.reduce((nestedObject, key) => {
+        if (!nestedObject[key]) nestedObject[key] = {};
+        return nestedObject[key];
+      }, newState)[lastKey] = value;
+      return newState;
+    });
   };
 
   return (
-    <Container className={classes.container}>
-      <form className={classes.formContainer} onSubmit={handleSubmit}>
-        <Typography variant="h5">Create Account</Typography>
-        <TextField
-          type="text"
-          label="Name"
-          name="name"
-          onChange={handleChange}
-          value={data.firstName}
-          required
-          fullWidth
-          className={classes.input}
-        />
-        <TextField
-          type="email"
-          label="Email"
-          name="email"
-          onChange={handleChange}
-          value={data.email}
-          required
-          fullWidth
-          className={classes.input}
-        />
-        <TextField
-          type="password"
-          label="Password"
-          name="password"
-          onChange={handleChange}
-          value={data.password}
-          required
-          fullWidth
-          className={classes.input}
-        />
-        <Typography variant="p">Choose Role Type</Typography>
-        <RadioGroup
-          aria-label="user-role"
-          name="user"
-          value={data.user}
-          onChange={handleChange}
-          fullWidth
-          className={classes.input}
-        >
-          <FormControlLabel value="male" control={<Radio />} label="User" />
-          <FormControlLabel value="female" control={<Radio />} label="Owner" />
-        </RadioGroup>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.button}
-        >
-          Sign Up
-        </Button>
-        <Typography variant="body1" className={classes.error}>
-          {error}
-        </Typography>
-        <Typography variant="body2">
-          Already have an account? <Link to="/login">Log in</Link>
-        </Typography>
-      </form>
-    </Container>
+    <Box className={classes.root}>
+      <Card className={classes.card}>
+        <CardContent>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <Box sx={{ p: 2, m: 2 }}>
+              <Typography style={{marginLeft:"150px"}} variant="h4">WELCOME TO RENT-IT</Typography>
+              <Typography style={{marginLeft:"177px"}}  variant="h6">Please Create Account to Continue!</Typography>
+              {loading && <CircularProgress />}
+              <TextField
+                required
+                id="username"
+                label="Username"
+                onChange={(e) => handleChange("username", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="email"
+                label="Email"
+                onChange={(e) => handleChange("email", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="password"
+                label="Password"
+                type="password"
+                onChange={(e) => handleChange("password", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <TextField
+                required
+                id="firstName"
+                label="First Name"
+                onChange={(e) =>
+                  handleChange("additionalDetails.firstName", e.target.value)
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="lastName"
+                label="Last Name"
+                onChange={(e) =>
+                  handleChange("additionalDetails.lastName", e.target.value)
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="phoneNumber"
+                label="Phone Number"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.phoneNumber",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                id="secondaryPhone"
+                label="Secondary Phone"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.secondaryPhone",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <TextField
+                required
+                id="address"
+                label="Address"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.address",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="city"
+                label="City"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.city",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="state"
+                label="State"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.state",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="zipCode"
+                label="Zip Code"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.zipCode",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="country"
+                label="Country"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.country",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <Button 
+              onClick={handleSubmit}
+              variant="contained">SIGN UP</Button>
+            </Box>
+          </Box>
+          <Box sx={{ p: 2, m: 2 }}>
+            <Typography variant="body1" className={classes.error}>
+              {error}
+            </Typography>
+            <Typography variant="h6">
+              Already have an account? <Link to="/login">LOG IN</Link>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

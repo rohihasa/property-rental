@@ -19,9 +19,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    width: "100vw",
-    backgroundImage: `url(${require("../../static/images/property-background.png")})`,
-    backgroundSize: "cover",
+    width: "700vh",
+    backgroundImage: `url(${require("../../static/images/bg.png")})`,
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
   },
@@ -73,7 +72,7 @@ function Login() {
         if (role === "ROLE_USER") {
           window.location = "/user/home";
         } else if (role === "ROLE_OWNER") {
-          window.location = "/company/home";
+          window.location = "user/home";
         } else if (role === "ROLE_ADMIN") {
           window.location = "/user/home/test";
         } else {
@@ -92,7 +91,8 @@ function Login() {
       <Grid container justify="center">
         <Grid item xs={12} sm={6} md={4}>
           <Box className={classes.formContainer}>
-            <Typography variant="h5" className={classes.formTitle}>
+          <Typography variant="h4">RENT-IT</Typography>
+            <Typography variant="h6" className={classes.formTitle}>
               Login to Your Account
             </Typography>
             <form onSubmit={handleSubmit}>

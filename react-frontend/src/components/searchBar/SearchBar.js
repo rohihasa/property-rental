@@ -59,9 +59,10 @@ function SearchBar() {
           onChange={(e) => setMaxPrice(e.target.value)}
           placeholder="Max Price"
         />
-        <button>
+        <button
+         onClick={handleSearch}>
           <img src="/search.png" alt="" />
-          onClick={handleSearch}
+         
         </button>
       </form>
     </div>

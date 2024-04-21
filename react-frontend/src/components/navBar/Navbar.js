@@ -10,13 +10,15 @@ import {
   MenuItem,
   Badge,
   ListItemIcon,
-  Button
+  Button,
 } from "@mui/material";
+import UserService from "../../services/UserService";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
+  const [userData, setUserData] = useState({});
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
   const user = userDetails && userDetails.id;
   const handleClickNotifications = (event) => {
@@ -25,6 +27,12 @@ function Navbar() {
 
   const handleCloseNotifications = () => {
     setAnchorElNotifications(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userDetails");
+    localStorage.removeItem("jwtToken");
+    alert("Logged out successfully");
   };
 
   useEffect(() => {
@@ -40,8 +48,6 @@ function Navbar() {
   const handleTick = (notificationId) => {
     NotificationService.updateNotification(notificationId)
       .then((response) => {
-        // Handle the response here
-        // For example, you might want to remove the notification from the list
         setNotifications(
           notifications.filter(
             (notification) => notification.id !== notificationId
@@ -53,6 +59,17 @@ function Navbar() {
       });
   };
 
+  useEffect(() => {
+    UserService.getUserById(user)
+      .then((response) => {
+        setUserData(response.data);
+        console.log("User response::", response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [user]);
+
   return (
     <nav>
       <div className="left">
@@ -60,16 +77,18 @@ function Navbar() {
         <h2>RENT-IT</h2>
         <Button href="/user/home">Home</Button>
         <Button href="/profile">Profile</Button>
-        <Button href="/">Logout</Button>
+        <Button onClick={handleLogout} href="/login">
+          Logout
+        </Button>
       </div>
       <div className="right">
         {user ? (
           <div className="user">
             <img
-              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              src={`data:image/jpeg;base64,${userData && userData.profileImage}`}
               alt=""
             />
-            <span>John Doe</span>
+            <span>{userData && userData.username}</span>
             <div>
               <IconButton
                 color="inherit"
