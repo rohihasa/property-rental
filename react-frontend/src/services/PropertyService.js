@@ -21,11 +21,16 @@ const sendMessageToOwner = (messageRequest) => {
   return httpClient.post(`property/message`, messageRequest);
 };
 
+const applyForProperty = (applyRequest) => {
+  return httpClient.post(`property/apply`, applyRequest);
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getPropertyLocations,
   getPropertiesByFilters,
   getPropertyById,
   saveOrUnsaveProperty,
-  sendMessageToOwner
+  sendMessageToOwner,
+  applyForProperty
 };

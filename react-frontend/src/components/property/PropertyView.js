@@ -7,6 +7,8 @@ import UserService from "../../services/UserService";
 import Navbar from "../navBar/Navbar";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FileService from "../../services/FileService";
+
 import {
   Dialog,
   DialogActions,
@@ -14,18 +16,29 @@ import {
   DialogTitle,
   TextField,
   IconButton,
+  Typography,
+  Button,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
 function PropertyView() {
   const { propertyId } = useParams();
-  const [singlePostData, setSinglePostData] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [messageRequest, setMessageRequest] = useState({
     propertyId: propertyId,
     message: "",
   });
+  const [otherOpen, setOtherOpen] = useState(false);
+  const [singlePostData, setSinglePostData] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [isApplied, setIsApplied] = useState(false);
   const [open, setOpen] = useState(false);
+  const [disableIdProof, setDisableIdProof] = useState(false);
+  const [disableCreditReport, setDisableCreditReport] = useState(false);
+  const [files, setFiles] = useState({
+    creditReport: "",
+    idProof: "",
+    propertyId: propertyId,
+  });
   const [message, setMessage] = useState("");
   const userId = localStorage.getItem("userDetails")
     ? JSON.parse(localStorage.getItem("userDetails")).id
@@ -69,9 +82,70 @@ function PropertyView() {
       });
   };
 
+  const handleOpen = () => {
+    setOtherOpen(true);
+  };
+
+  const handleClose = () => {
+    setOtherOpen(false);
+  };
+
   const handleChatButton = () => {
     setOpen(true);
     console.log("Chat button clicked");
+  };
+
+  const handlePropertyApply = () => {
+    PropertyService.applyForProperty(files)
+      .then((response) => {
+        console.log("Property applied:", response);
+        setIsApplied(true);
+        handleClose();
+      })
+      .catch((error) => {
+        alert("Error applying for property");
+        console.log("Error applying for property:", error);
+      });
+  };
+
+  const handleUploadCreditReport = (event) => {
+    console.log("File:::", event.target.files[0]);
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    console.log("formData", formData.get("file"));
+    setLoading(true);
+    FileService.uploadFile(formData)
+      .then((response) => {
+        console.log("File uploaded successfully:", response.data.id);
+        setFiles({ ...files, creditReport: response.data.id });
+        setDisableCreditReport(true);
+      })
+      .catch((error) => {
+        console.error("Error uploading file:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading
+      });
+  };
+
+  const handleUploadIdProof = (event) => {
+    console.log("File:::", event.target.files[0]);
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    console.log("formData", formData.get("file"));
+    setLoading(true);
+    FileService.uploadFile(formData)
+      .then((response) => {
+        console.log("File uploaded successfully:", response.data.id);
+        setFiles({ ...files, idProof: response.data.id });
+        setDisableIdProof(true);
+      })
+      .catch((error) => {
+        console.error("Error uploading file:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading
+      });
   };
 
   const handleSend = () => {
@@ -215,6 +289,14 @@ function PropertyView() {
               <img src="/save.png" alt="" />
               Save the Place
             </button>
+
+            <button 
+               disabled={isApplied}
+            onClick={handleOpen}>
+           
+              <img src="/restaurant.png" alt="" />
+              {isApplied ? "Applied" : "Apply"}
+            </button>
             <Dialog
               open={open}
               onClose={() => setOpen(false)}
@@ -248,6 +330,56 @@ function PropertyView() {
                     <SendIcon />
                   </IconButton>
                 )}
+              </DialogActions>
+            </Dialog>
+
+            <Dialog open={otherOpen} onClose={handleClose}>
+              <DialogTitle>APPLY FOR THE PROPERTY</DialogTitle>
+              <DialogContent>
+                <Typography variant="body2">
+                  <b>CONTACT DETAILS</b>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Email: {userData && userData.email}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Phone: {userData && userData.phone}
+                </Typography>
+                <br></br>
+                <Typography style={{ margin: "5px" }} variant="body2">
+                  {" "}
+                  CREDIT REPORT
+                </Typography>
+                <TextField
+                  type="file"
+                  accept=".pdf, .doc, .docx"
+                  onChange={(e) => handleUploadCreditReport(e)}
+                />
+                {disableCreditReport && (
+                  <CheckCircleIcon style={{ margin: "15px" }} />
+                )}
+                <br></br>
+                <br></br>
+                <Typography style={{ margin: "5px" }} variant="body2">
+                  {" "}
+                  ID PROOF
+                </Typography>
+                <TextField
+                  type="file"
+                  accept=".pdf, .doc, .docx"
+                  onChange={(e) => handleUploadIdProof(e)}
+                />
+                {disableIdProof && (
+                  <CheckCircleIcon style={{ margin: "15px" }} />
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handlePropertyApply} color="primary">
+                  Apply
+                </Button>
               </DialogActions>
             </Dialog>
           </div>
