@@ -48,8 +48,6 @@ public class User {
 
   private List<String> ownedProperties;
 
-  private ContactDetails contactDetails;
-
   private String identityProof;
 
   private String creditReport;

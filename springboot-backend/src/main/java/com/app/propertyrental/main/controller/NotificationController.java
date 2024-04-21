@@ -33,9 +33,9 @@ public class NotificationController {
         notificationService.deleteNotification(notificationId);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Notification>> getNotifications(@PathVariable String userId) {
-        return notificationService.getNotifications(userId);
-    }
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<List<Notification>> getNotifications(@PathVariable String userId) {
+//        return notificationService.getNotifications(userId);
+//    }
 
 }

@@ -1,5 +1,11 @@
 package com.app.propertyrental.main.service;
 
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
 
 import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.common.repository.UserRepository;
@@ -16,8 +22,11 @@ import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.ComplaintRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,9 +81,39 @@ public class PropertyServiceImpl implements PropertyService {
     public ResponseEntity<Property> createProperty(Property property) {
         try {
             property.setOwnerId(commonUtils.getUserId());
+            property.setVerificationStatus(false);
+            updateLatLongByZipCode(property.getAddress().getZipCode(), property);
             return ResponseEntity.ok(propertyRepository.save(property));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    public void updateLatLongByZipCode(String zipCode, Property property) {
+        final String url = "https://nominatim.openstreetmap.org/search?postalcode=" + zipCode + "&format=json&countrycodes=US";
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            List<Map<String, Object>> results = response.getBody();
+            if (results.isEmpty()) {
+                throw new RuntimeException("Zipcode not found");
+            } else {
+                Map<String, Object> locationData = results.get(0);
+                property.getAddress().setLatitude((String) locationData.get("lat"));
+                property.getAddress().setLongitude((String) locationData.get("lon"));
+//                propertyRepository.save(property);
+            }
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("Zipcode not found");
+            } else {
+                throw new RuntimeException("Error occurred while fetching data from OpenStreetMap");
+            }
         }
     }
 

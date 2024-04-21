@@ -48,6 +48,9 @@ public class ApplicationController {
     }
 
 
-
+    @GetMapping("/transaction/create")
+    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
+        return applicationService.createTransaction(transactionRequest);
+    }
 
 }

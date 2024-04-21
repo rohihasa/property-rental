@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService{
 
             User user = userRepository.findById(id).get();
             ReportResponse reportResponse = new ReportResponse();
-            reportResponse.setContactDetails(user.getContactDetails());
+            reportResponse.setContactDetails(user.getAdditionalDetails().getContactDetails());
             reportResponse.setCreditReport(user.getCreditReport());
             reportResponse.setIdProof(user.getIdentityProof());
 
@@ -109,7 +109,8 @@ public class UserServiceImpl implements UserService{
     @Override
     public ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods) {
         try{
-            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+//            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            paymentMethods.setCustomerId(commonUtils.getUserId());
             paymentRepository.save(paymentMethods);
             return ResponseEntity.ok(paymentMethods);
         }catch (Exception e) {

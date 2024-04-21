@@ -79,15 +79,14 @@ public class ApplicationServiceImpl implements ApplicationService {
             if (status.equals(ApplicationStatus.MOVED_IN)) {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
                 property.setIsAvailable(false);
+                createTransaction(transactionRequest);
                 createContract(application, property);
                 propertyRepository.save(property);
             }else if(status.equals(ApplicationStatus.CANCELLED)){
                 applicationRepository.delete(application);
                 return ResponseEntity.ok("Application cancelled");
             }
-            else {
-                application.setStatus(status);
-            }
+            application.setStatus(status);
             applicationRepository.save(application);
             return ResponseEntity.ok(application);
         } catch (Exception e) {
@@ -110,6 +109,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             contract.setEmploymentDetails(application.getEmploymentDetails());
             contract.setRentalAgreement(property.getPropertyDetails().getRentalAgreement());
             Contract _contract = contractRepository.save(contract);
+
         } catch (Exception e) {
             throw new RuntimeException("Error while creating contract");
         }
