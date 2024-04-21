@@ -76,7 +76,7 @@ function Navbar() {
         <img src="/logo.png" alt="" />
         <h2>RENT-IT</h2>
         <Button href="/user/home">Home</Button>
-        <Button href="/profile">Profile</Button>
+        <Button href="/user/profile">Profile</Button>
         <Button onClick={handleLogout} href="/login">
           Logout
         </Button>
