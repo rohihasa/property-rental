@@ -18,7 +18,7 @@ public interface ApplicationService {
 
     ResponseEntity<List<Application>> getApplicationsByPropertyId(String propertyId);
 
-    ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status);
+    ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status,TransactionRequest transactionRequest);
 
 
     //to add card details and accept the rental agreement

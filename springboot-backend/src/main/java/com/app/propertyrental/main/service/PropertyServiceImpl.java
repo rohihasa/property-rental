@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class PropertyServiceImpl implements PropertyService{
+public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
 
@@ -39,28 +39,39 @@ public class PropertyServiceImpl implements PropertyService{
 
     private final NotificationService notificationService;
 
-    public PropertyServiceImpl( UserRepository userRepository,PropertyRepository propertyRepository,ApplicationRepository applicationRepository, ComplaintRepository complaintRepository, CommonUtils commonUtils,NotificationService notificationService) {
+    public PropertyServiceImpl(UserRepository userRepository, PropertyRepository propertyRepository, ApplicationRepository applicationRepository, ComplaintRepository complaintRepository, CommonUtils commonUtils, NotificationService notificationService) {
         this.propertyRepository = propertyRepository;
         this.complaintRepository = complaintRepository;
         this.commonUtils = commonUtils;
         this.applicationRepository = applicationRepository;
-        this.notificationService=notificationService;
-        this.userRepository=userRepository;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
     }
 
 
     @Override
     public ResponseEntity<List<Property>> getAllProperties(double minPrice, double maxPrice, String location) {
-       try{
-                return ResponseEntity.ok(propertyRepository.findAll());
-             } catch (Exception e) {
-                return ResponseEntity.badRequest().body(null);
-       }
+        try {
+            List<Property> properties = propertyRepository.findAll();
+            if (minPrice != 0) {
+                properties = properties.stream().filter(property -> property.getPrice() >= minPrice).collect(Collectors.toList());
+            }
+            if (maxPrice != 0) {
+                properties = properties.stream().filter(property -> property.getPrice() <= maxPrice).collect(Collectors.toList());
+            }
+            if (location != null) {
+                properties = properties.stream().filter(property -> property.getAddress().getCity().equals(location)).collect(Collectors.toList());
+            }
+            return ResponseEntity.ok(properties);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @Override
     public ResponseEntity<Property> createProperty(Property property) {
-        try{
+        try {
+            property.setOwnerId(commonUtils.getUserId());
             return ResponseEntity.ok(propertyRepository.save(property));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -69,7 +80,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<Property> updateProperty(String propertyId, Property property) {
-        try{
+        try {
             Property property1 = propertyRepository.findById(propertyId).get();
             //TODO : cehck update property
             property.setId(property1.getId());
@@ -80,15 +91,15 @@ public class PropertyServiceImpl implements PropertyService{
     }
 
     @Override
-    public ResponseEntity<String> updateVerificationStatus(String propertyId, Boolean status) {
-        try{
+    public ResponseEntity<String> updateVerificationStatus(String propertyId, String status) {
+        try {
             Property property = propertyRepository.findById(propertyId).get();
-            if(status.equals("accept")){
+            if (status.equals("accept")) {
                 property.setVerificationStatus(true);
                 propertyRepository.save(property);
                 return ResponseEntity.ok("Property Verified");
             } else {
-               propertyRepository.delete(property);
+                propertyRepository.delete(property);
                 return ResponseEntity.ok("Property dleted");
             }
 
@@ -100,7 +111,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<PropertyDetails> getPropertyTerms(String propertyId) {
-        try{
+        try {
             Property property = propertyRepository.findById(propertyId).get();
             return ResponseEntity.ok(property.getPropertyDetails());
         } catch (Exception e) {
@@ -110,7 +121,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<PropertyDetails> updatePropertyTerms(String propertyId, PropertyDetails propertyDetails) {
-        try{
+        try {
             Property property = propertyRepository.findById(propertyId).get();
             property.setPropertyDetails(propertyDetails);
             return ResponseEntity.ok(propertyRepository.save(property).getPropertyDetails());
@@ -121,7 +132,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<Property> getPropertyById(String propertyId) {
-        try{
+        try {
             return ResponseEntity.ok(propertyRepository.findById(propertyId).get());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -130,8 +141,9 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<List<String>> getLocations() {
-        try{
-            return ResponseEntity.ok(propertyRepository.findDistinctLocations());
+        try {
+            List<Property> properties = propertyRepository.findAll();
+            return ResponseEntity.ok(properties.stream().map(property -> property.getAddress().getCity()).distinct().collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -158,21 +170,21 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<String> applyForProperty(ApplicationRequest applicationRequest) {
-        try{
+        try {
             ObjectId userId = commonUtils.getUserId();
             Property property = propertyRepository.findById(applicationRequest.getPropertyId()).get();
-            Application application= new Application();
+            Application application = new Application();
 
             application.setUserId(userId);
             application.setPropertyId(new ObjectId(applicationRequest.getPropertyId()));
             application.setStatus(ApplicationStatus.PENDING);
-            application.setMessage(application.getMessage());
+            application.setMessage(applicationRequest.getMessage());
             application.setCreatedAt(commonUtils.getCurrentDate());
             application.setUpdatedAt(commonUtils.getCurrentDate());
             application.setMoveInDate(applicationRequest.getMoveInDate());
             application.setEmergencyContact(applicationRequest.getEmergencyContact());
             application.setEmploymentDetails(applicationRequest.getEmploymentDetails());
-            application.setCreditReport(new ObjectId( applicationRequest.getCreditReport()));
+            application.setCreditReport(new ObjectId(applicationRequest.getCreditReport()));
 
             applicationRepository.save(application);
 
@@ -185,7 +197,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<List<Complaint>> getComplaints(String propertyId) {
-        try{
+        try {
             return ResponseEntity.ok(complaintRepository.findByPropertyId(new ObjectId(propertyId)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -193,9 +205,10 @@ public class PropertyServiceImpl implements PropertyService{
     }
 
     @Override
-    public ResponseEntity<String> createComplaint(String propertyId, Complaint complaint) {
-        try{
-            complaint.setPropertyId(new ObjectId(propertyId));
+    public ResponseEntity<String> createComplaint(Complaint complaint) {
+        try {
+            complaint.setUserId(commonUtils.getUserId());
+            complaint.setPropertyId(complaint.getPropertyId());
             complaintRepository.save(complaint);
             return ResponseEntity.ok("Complaint created successfully");
         } catch (Exception e) {
@@ -205,9 +218,9 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<String> updateComplaintStatus(String complaintId, String status) {
-        try{
+        try {
             Complaint complaint = complaintRepository.findById(complaintId).get();
-            if(status.equals("resolve")){
+            if (status.equals("resolve")) {
                 complaint.setIsResolved(true);
             } else {
                 complaint.setIsResolved(false);
@@ -222,16 +235,16 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<String> sendMessase(String propertyId, String message) {
-        try{
+        try {
             Property property = propertyRepository.findById(propertyId).get();
-            User user=userRepository.findById(property.getId()).get();
+            User user = userRepository.findById(property.getOwnerId().toString()).get();
             Notification notification = new Notification();
-            notification.setReceiverId(new ObjectId( user.getId()));
+            notification.setReceiverId(new ObjectId(user.getId()));
             notification.setSenderId(commonUtils.getUserId());
             notification.setMessage(message);
             notification.setCreatedAt(commonUtils.getCurrentDate());
             notification.setIsRead(false);
-            notificationService.sendNotification(notification,true);
+            notificationService.sendNotification(notification, true);
             return ResponseEntity.ok("Message sent successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
@@ -240,7 +253,7 @@ public class PropertyServiceImpl implements PropertyService{
 
     @Override
     public ResponseEntity<List<Property>> getOwnerProperties() {
-        try{
+        try {
             ObjectId userId = commonUtils.getUserId();
             return ResponseEntity.ok(propertyRepository.findByOwnerId(userId));
         } catch (Exception e) {

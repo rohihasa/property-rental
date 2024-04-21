@@ -37,6 +37,7 @@ public class Property {
 
     //filters
     // get location from address
+
     private Boolean isAvailable;
     private Boolean isFurnished;
     private Double price;

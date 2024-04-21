@@ -6,9 +6,11 @@ import com.app.propertyrental.common.repository.RoleRepository;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
 import com.app.propertyrental.main.models.Notification;
+import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.repository.NotificationRepository;
+import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,12 +29,15 @@ public class UserServiceImpl implements UserService{
 
     private RoleRepository roleRepository;
 
+    private PaymentRepository paymentRepository;
+
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository,RoleRepository roleRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository,PaymentRepository paymentRepository,RoleRepository roleRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
         this.roleRepository=roleRepository;
         this.propertyRepository = propertyRepository;
+        this.paymentRepository=paymentRepository;
         this.notificationRepository = notificationRepository;
         this.commonUtils=commonUtils;
     }
@@ -102,6 +107,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods) {
+        try{
+            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            paymentRepository.save(paymentMethods);
+            return ResponseEntity.ok(paymentMethods);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<PaymentMethods> getPaymentMethod(String id) {
+        try{
+            return ResponseEntity.ok(paymentRepository.findById(id).get());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Override
     public ResponseEntity<List<User>> getPendingUsers() {
         try{
             return ResponseEntity.ok(userRepository.findByVerified(false));
@@ -115,7 +140,12 @@ public class UserServiceImpl implements UserService{
         try{
             User user = userRepository.findById(commonUtils.getUserId().toString()).get();
             Property property = propertyRepository.findById(propertyId).get();
-            user.getSavedProperties().add(property.getId());
+            List<String> savedProperties = user.getSavedProperties();
+            if(savedProperties.contains(property.getId())){
+                user.getSavedProperties().remove(property.getId());
+            }else{
+                user.getSavedProperties().add(property.getId());
+            }
             userRepository.save(user);
             return ResponseEntity.ok("Property Saved");
         } catch (Exception e) {

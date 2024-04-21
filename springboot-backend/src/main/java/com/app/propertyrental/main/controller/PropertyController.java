@@ -24,8 +24,8 @@ public class PropertyController {
 
     @GetMapping("/")
     public ResponseEntity<List<Property>> getAllProperties(
-            @RequestParam(value = "minPrice",required = false) double minPrice,
-            @RequestParam(value = "maxPrice",required = false)  double maxPrice,
+            @RequestParam(value = "minPrice",required = false,defaultValue = "0") double minPrice,
+            @RequestParam(value = "maxPrice",required = false,defaultValue = "99999999")  double maxPrice,
             @RequestParam(value = "location",required = false) String location) {
        return propertyService.getAllProperties(minPrice, maxPrice, location);
     }
@@ -47,7 +47,7 @@ public class PropertyController {
 
 
     @PatchMapping("/{propertyId}/status/{status}")
-    public ResponseEntity<String> updateVerificationStatus(@PathVariable String propertyId, @PathVariable Boolean status) {
+    public ResponseEntity<String> updateVerificationStatus(@PathVariable String propertyId, @PathVariable String status) {
        return propertyService.updateVerificationStatus(propertyId, status);
     }
 
@@ -63,7 +63,7 @@ public class PropertyController {
     }
 
 
-    @PostMapping("/{propertyId}/apply")
+    @PostMapping("/apply")
     public ResponseEntity<String> applyForProperty(@RequestBody ApplicationRequest applicationRequest) {
        return propertyService.applyForProperty(applicationRequest);
     }
@@ -73,22 +73,22 @@ public class PropertyController {
        return propertyService.getComplaints(propertyId);
     }
 
-    @PostMapping("/{propertyId}/complaints")
-    public ResponseEntity<String> createComplaint(@PathVariable String propertyId, @RequestBody Complaint complaint) {
-       return propertyService.createComplaint(propertyId, complaint);
+    @PostMapping("/complaint")
+    public ResponseEntity<String> createComplaint(@RequestBody Complaint complaint) {
+       return propertyService.createComplaint( complaint);
     }
 
-    @PatchMapping("/complaints/{complaintId}/status/{status}")
+    @PatchMapping("/complaint/{complaintId}/status/{status}")
     public ResponseEntity<String> updateComplaintStatus(@PathVariable String complaintId, @PathVariable String status) {
        return propertyService.updateComplaintStatus(complaintId, status);
     }
 
     @PostMapping("/{propertyId}/message")
-    public ResponseEntity<String> sendMessase(@PathVariable String propertyId, @RequestParam String message) {
+    public ResponseEntity<String> sendMessase(@PathVariable String propertyId, @RequestParam("message") String message) {
        return propertyService.sendMessase(propertyId, message);
     }
 
-    @PostMapping("/owner")
+    @GetMapping("/owner")
     public ResponseEntity<List<Property>> getOwnerProperties() {
        return propertyService.getOwnerProperties();
     }
@@ -99,7 +99,7 @@ public class PropertyController {
        return propertyService.getLocations();
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/filters")
     public ResponseEntity<FiltersResponse> getFilter() {
        return propertyService.getFilters();
     }

@@ -73,12 +73,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status) {
+    public ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status,TransactionRequest transactionRequest) {
         try {
             Application application = applicationRepository.findById(applicationId).get();
             if (status.equals(ApplicationStatus.MOVED_IN)) {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
+                property.setIsAvailable(false);
                 createContract(application, property);
+                propertyRepository.save(property);
             }else if(status.equals(ApplicationStatus.CANCELLED)){
                 applicationRepository.delete(application);
                 return ResponseEntity.ok("Application cancelled");

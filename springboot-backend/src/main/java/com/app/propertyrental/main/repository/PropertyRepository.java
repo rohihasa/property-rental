@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PropertyRepository extends MongoRepository<Property, String> {
-    List<String> findDistinctLocations();
 
     List<Property> findByOwnerId(ObjectId userId);
 }

@@ -2,6 +2,7 @@ package com.app.propertyrental.main.service;
 
 import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.main.models.Notification;
+import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,10 @@ public interface UserService {
     ResponseEntity<List<Notification>> getNotificationsForUser();
 
     ResponseEntity<ReportResponse> getReportForUser(String id);
+
+    ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods);
+
+    ResponseEntity<PaymentMethods> getPaymentMethod(String id);
 
     ResponseEntity<List<User>> getPendingUsers();
 

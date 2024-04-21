@@ -17,7 +17,7 @@ public interface PropertyService {
 
     ResponseEntity<Property> updateProperty(String propertyId, Property property);
 
-    ResponseEntity<String> updateVerificationStatus(String propertyId, Boolean status);
+    ResponseEntity<String> updateVerificationStatus(String propertyId, String status);
 
     ResponseEntity<PropertyDetails> getPropertyTerms(String propertyId);
 
@@ -32,7 +32,7 @@ public interface PropertyService {
 
     ResponseEntity<List<Complaint>> getComplaints(String propertyId);
 
-    ResponseEntity<String> createComplaint(String propertyId, Complaint complaint);
+    ResponseEntity<String> createComplaint(Complaint complaint);
 
     ResponseEntity<String> updateComplaintStatus(String complaintId, String status);
 

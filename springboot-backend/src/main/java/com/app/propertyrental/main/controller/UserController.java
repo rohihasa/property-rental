@@ -2,6 +2,7 @@ package com.app.propertyrental.main.controller;
 
 import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.main.models.Notification;
+import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.service.UserService;
@@ -49,6 +50,15 @@ public class UserController {
         return userService.getReportForUser(userId);
     }
 
+    @PostMapping("/addPaymentMethod")
+    public ResponseEntity<?> addPaymentMethod(@RequestBody PaymentMethods paymentMethods){
+        return userService.addPaymentMethod(paymentMethods);
+    }
+
+    @GetMapping("/paymentMethod/{id}")
+    public ResponseEntity<PaymentMethods> getPaymentMethod(@PathVariable("id") String id) {
+        return userService.getPaymentMethod(id);
+    }
 
     @GetMapping("/pending")
     public ResponseEntity<List<User>> getPendingUsers() {
@@ -60,12 +70,17 @@ public class UserController {
         return userService.getSavedPropertiesForUser();
     }
 
-    @GetMapping("/applyForOwner")
+    @PostMapping("/saveProperty/{propertyId}")
+    public ResponseEntity<?> saveProperty(@PathVariable("propertyId") String propertyId) {
+        return userService.saveProperty(propertyId);
+    }
+
+    @PatchMapping("/applyForOwner")
     public ResponseEntity<?> applyForOwner() {
         return userService.applyForOwner();
     }
 
-    @GetMapping("/approveUser/{userId}/{status}")
+    @PatchMapping("/approveUser/{userId}/{status}")
     public ResponseEntity<?> approveUser(@PathVariable("userId") String userId,@PathVariable("status") String status) {
         return userService.approveUser(userId, status);
     }
