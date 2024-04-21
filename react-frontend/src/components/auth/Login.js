@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import UserService from "../../services/UserService";
 import {
   Container,
   Typography,
@@ -49,38 +49,44 @@ const useStyles = makeStyles((theme) => ({
 function Login() {
   const classes = useStyles();
 
-  const [data, setData] = useState({ username: "", password: "" });
+  const [data, setData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const headers = {
-    "Content-Type": "application/json",
-  };
 
-  const handleChange = ({ currentTarget: input }) => {
-    setData({ ...data, [input.name]: input.value });
+  const handleChange = ({ target }) => {
+    setData({ ...data, [target.name]: target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    try {
-      const url = "http://localhost:8080/api/auth/signin";
-      const { data: res } = await axios.post(url, data, { headers: headers });
-
-      localStorage.setItem("token", res.data);
-      window.location = "/";
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setError(error.response.data.message);
-      }
-    }
-    setLoading(false);
+    UserService.userLogin(data)
+      .then((response) => {
+        setLoading(false);
+        console.log("response:::::::", response);
+        const jwtToken = response.headers["x-jwt-token"];
+        console.log("jwtToken::::::", jwtToken);
+        localStorage.setItem("jwtToken", jwtToken);
+        const { role } = response.data;
+        localStorage.setItem("userDetails", JSON.stringify(response.data));
+        if (role === "ROLE_USER") {
+          window.location = "/user/home";
+        } else if (role === "ROLE_OWNER") {
+          window.location = "/company/home";
+        } else if (role === "ROLE_ADMIN") {
+          window.location = "/user/home/test";
+        } else {
+          console.error("Unknown role received from API:", role);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+        setError(error.message);
+        console.log("error:::::::", error);
+      });
   };
-
   return (
     <Container className={classes.container}>
       <Grid container justify="center">
@@ -91,11 +97,11 @@ function Login() {
             </Typography>
             <form onSubmit={handleSubmit}>
               <TextField
-                type="username"
-                label="Username"
-                name="username"
+                type="email"
+                label="Email"
+                name="email"
                 onChange={handleChange}
-                value={data.username}
+                value={data.email}
                 required
                 fullWidth
                 className={classes.formInput}

@@ -1,28 +1,14 @@
-import React from "react";
-import styles from "./landingPage.styles.module.css";
+import React from 'react'
+import Navbar from '../../navBar/Navbar'
+import Home from '../Home'
 
-const Main = () => {
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.reload();
-  };
-
+function LandingPage() {
   return (
     <div>
-      <nav className={styles.navbar}>
-        <div className={styles.navbar_left}>
-          <h1>fakebook</h1>
-          <p className={styles.navbar_link}>Home</p>
-          <p className={styles.navbar_link}>Profile</p>
-        </div>
-        <div className={styles.navbar_right}>
-          <button className={styles.white_btn} onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Navbar/>
+      <Home/>
     </div>
-  );
-};
+  )
+}
 
-export default Main;
+export default LandingPage
