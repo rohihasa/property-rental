@@ -7,6 +7,7 @@ import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -61,6 +63,7 @@ public class UserController {
     }
 
     @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getPendingUsers() {
         return userService.getPendingUsers();
     }
@@ -76,11 +79,13 @@ public class UserController {
     }
 
     @PatchMapping("/applyForOwner")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> applyForOwner() {
         return userService.applyForOwner();
     }
 
     @PatchMapping("/approveUser/{userId}/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> approveUser(@PathVariable("userId") String userId,@PathVariable("status") String status) {
         return userService.approveUser(userId, status);
     }

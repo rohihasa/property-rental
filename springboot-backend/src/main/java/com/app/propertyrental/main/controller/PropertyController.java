@@ -8,6 +8,7 @@ import com.app.propertyrental.main.payload.request.ApplicationRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import com.app.propertyrental.main.service.PropertyService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class PropertyController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Property> createProperty(@RequestBody Property property) {
        return propertyService.createProperty(property);
     }
@@ -41,12 +43,14 @@ public class PropertyController {
     }
 
     @PatchMapping("/{propertyId}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Property> updateProperty(@PathVariable String propertyId, @RequestBody Property property) {
        return propertyService.updateProperty(propertyId, property);
     }
 
 
     @PatchMapping("/{propertyId}/status/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateVerificationStatus(@PathVariable String propertyId, @PathVariable String status) {
        return propertyService.updateVerificationStatus(propertyId, status);
     }
@@ -58,12 +62,14 @@ public class PropertyController {
     }
 
     @PatchMapping("/{propertyId}/terms")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<PropertyDetails> updatePropertyTerms(@PathVariable String propertyId, @RequestBody PropertyDetails propertyDetails) {
        return propertyService.updatePropertyTerms(propertyId, propertyDetails);
     }
 
 
     @PostMapping("/apply")
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
     public ResponseEntity<String> applyForProperty(@RequestBody ApplicationRequest applicationRequest) {
        return propertyService.applyForProperty(applicationRequest);
     }
@@ -74,11 +80,13 @@ public class PropertyController {
     }
 
     @PostMapping("/complaint")
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
     public ResponseEntity<String> createComplaint(@RequestBody Complaint complaint) {
        return propertyService.createComplaint( complaint);
     }
 
     @PatchMapping("/complaint/{complaintId}/status/{status}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<String> updateComplaintStatus(@PathVariable String complaintId, @PathVariable String status) {
        return propertyService.updateComplaintStatus(complaintId, status);
     }
@@ -89,6 +97,7 @@ public class PropertyController {
     }
 
     @GetMapping("/owner")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     public ResponseEntity<List<Property>> getOwnerProperties() {
        return propertyService.getOwnerProperties();
     }
