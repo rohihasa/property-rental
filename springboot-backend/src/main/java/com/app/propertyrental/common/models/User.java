@@ -35,12 +35,15 @@ public class User {
   @Size(max = 120)
   private String password;
 
-
   private Set<ERole> roles;
 
   private boolean verified;
 
-  private AdditionalDetails additionalDetails;
+  private String firstName;
+
+  private  String lastName;
+
+  private ContactDetails contactDetails;
 
   private String profileImage;
 

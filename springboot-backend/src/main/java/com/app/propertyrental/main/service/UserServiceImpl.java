@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
             User user = userRepository.findById(id).get();
             ReportResponse reportResponse = new ReportResponse();
-            reportResponse.setContactDetails(user.getAdditionalDetails().getContactDetails());
+            reportResponse.setContactDetails(user.getContactDetails());
             if (user.getIdentityProof() == null) {
                 reportResponse.setIdProof("Not Available");
             } else {

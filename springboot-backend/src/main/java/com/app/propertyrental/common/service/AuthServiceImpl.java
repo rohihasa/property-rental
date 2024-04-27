@@ -36,13 +36,13 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-//    private final RoleRepository roleRepository;
+    //    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final AdminRepository adminRepository;
 
 //    private final UserService userService;
 
-    AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserRepository userRepository,  PasswordEncoder encoder, AdminRepository adminRepository) {
+    AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserRepository userRepository, PasswordEncoder encoder, AdminRepository adminRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
@@ -99,12 +99,19 @@ public class AuthServiceImpl implements AuthService {
         });
 
 
-        user.setRoles   (roles);
-
-        user.setAdditionalDetails(signUpRequest.getAdditionalDetails());
-        user.getAdditionalDetails().setContactDetails(signUpRequest.getContactDetails());
+        user.setRoles(roles);
+        user.setFirstName(signUpRequest.getAdditionalDetails().getFirstName());
+        user.setLastName(signUpRequest.getAdditionalDetails().getLastName());
+        user.setContactDetails(signUpRequest.getContactDetails());
+        if (signUpRequest.getProfileImage() != null && !signUpRequest.getProfileImage().isEmpty()) {
+            user.setProfileImage(signUpRequest.getProfileImage());
+        } else {
+            user.setProfileImage("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgaWQ9InVzZXIiPjxwYXRoIGZpbGw9IiMxNjdmZmMiIGQ9Ik0zMS42NCwyNy43MmExMy45NCwxMy45NCwwLDAsMS0xNS4yOCwwQTE4LDE4LDAsMCwwLDYuMDUsNDIuOTRhMSwxLDAsMCwwLC4yNy43NSwxLDEsMCwwLDAsLjczLjMxSDQxYTEsMSwwLDAsMCwuNzMtLjMxLDEsMSwwLDAsMCwuMjctLjc1QTE4LDE4LDAsMCwwLDMxLjY0LDI3LjcyWiIgY2xhc3M9ImNvbG9yNDJjM2NmIHN2Z1NoYXBlIj48L3BhdGg+PGNpcmNsZSBjeD0iMjQiIGN5PSIxNiIgcj0iMTIiIGZpbGw9IiMxNjdmZmMiIGNsYXNzPSJjb2xvcjQyYzNjZiBzdmdTaGFwZSI+PC9jaXJjbGU+PC9zdmc+");
+        }
         user.setSavedProperties(List.of());
         user.setOwnedProperties(List.of());
+        user.setIdentityProof("");
+        user.setCreditReport("");
         User _user = userRepository.save(user);
 
         if (signUpRequest.getRole().equalsIgnoreCase("admin")) {

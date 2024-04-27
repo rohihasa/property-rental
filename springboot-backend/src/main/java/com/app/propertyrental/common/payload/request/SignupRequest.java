@@ -35,10 +35,6 @@ public class SignupRequest {
 
   private AdditionalDetails additionalDetails;
 
-  private List<String> savedProperties;
-
-  private List<String> ownedProperties;
-
   private ContactDetails contactDetails;
 
 
