@@ -75,7 +75,7 @@ public class PropertyServiceImpl implements PropertyService {
             if (maxPrice != 0) {
                 properties = properties.stream().filter(property -> property.getPrice() <= maxPrice).collect(Collectors.toList());
             }
-            if (location != null) {
+            if (location != null && !location.isEmpty()) {
                 properties = properties.stream().filter(property -> property.getAddress().getCity().equals(location)).collect(Collectors.toList());
             }
             return ResponseEntity.ok(properties);

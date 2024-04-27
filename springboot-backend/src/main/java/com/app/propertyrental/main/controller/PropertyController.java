@@ -30,7 +30,7 @@ public class PropertyController {
     public ResponseEntity<List<Property>> getAllProperties(
             @RequestParam(value = "minPrice",required = false,defaultValue = "0") double minPrice,
             @RequestParam(value = "maxPrice",required = false,defaultValue = "99999999")  double maxPrice,
-            @RequestParam(value = "location",required = false) String location) {
+            @RequestParam(value = "location",required = false,defaultValue = "") String location) {
        return propertyService.getAllProperties(minPrice, maxPrice, location);
     }
 
