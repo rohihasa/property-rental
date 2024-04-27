@@ -52,6 +52,12 @@ public class UserController {
         return userService.getReportForUser(userId);
     }
 
+    @PatchMapping("/{userId}/report")
+    public ResponseEntity<ReportResponse> patchReports(@RequestBody ReportResponse reportResponse) {
+        return userService.patchReports(reportResponse);
+    }
+
+
     @PostMapping("/addPaymentMethod")
     public ResponseEntity<?> addPaymentMethod(@RequestBody PaymentMethods paymentMethods){
         return userService.addPaymentMethod(paymentMethods);

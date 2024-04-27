@@ -5,6 +5,7 @@ import com.app.propertyrental.main.models.Complaint;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.models.property.PropertyDetails;
 import com.app.propertyrental.main.payload.request.ApplicationRequest;
+import com.app.propertyrental.main.payload.request.MessageRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import com.app.propertyrental.main.service.PropertyService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PropertyController {
          this.propertyService = propertyService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<Property>> getAllProperties(
             @RequestParam(value = "minPrice",required = false,defaultValue = "0") double minPrice,
             @RequestParam(value = "maxPrice",required = false,defaultValue = "99999999")  double maxPrice,
@@ -91,9 +92,9 @@ public class PropertyController {
        return propertyService.updateComplaintStatus(complaintId, status);
     }
 
-    @PostMapping("/{propertyId}/message")
-    public ResponseEntity<String> sendMessase(@PathVariable String propertyId, @RequestParam("message") String message) {
-       return propertyService.sendMessase(propertyId, message);
+    @PostMapping("/message")
+    public ResponseEntity<String> sendMessase( @RequestBody MessageRequest messageRequest) {
+       return propertyService.sendMessase(messageRequest);
     }
 
     @GetMapping("/owner")

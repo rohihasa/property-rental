@@ -17,9 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
@@ -33,19 +34,19 @@ public class UserServiceImpl implements UserService{
 
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository,PaymentRepository paymentRepository,RoleRepository roleRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, RoleRepository roleRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
-        this.roleRepository=roleRepository;
+        this.roleRepository = roleRepository;
         this.propertyRepository = propertyRepository;
-        this.paymentRepository=paymentRepository;
+        this.paymentRepository = paymentRepository;
         this.notificationRepository = notificationRepository;
-        this.commonUtils=commonUtils;
+        this.commonUtils = commonUtils;
     }
 
 
     @Override
     public ResponseEntity<String> getProfilePic() {
-        try{
+        try {
             return ResponseEntity.ok(userRepository.findById(commonUtils.getUserId().toString()).get().getProfileImage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
@@ -55,20 +56,20 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<List<User>> getAllUsers() {
-       try{
-              return ResponseEntity.ok(userRepository.findAll());
-         } catch (Exception e) {
-              return ResponseEntity.badRequest().body(null);
-       }
+        try {
+            return ResponseEntity.ok(userRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @Override
     public ResponseEntity<User> getUserById(String id) {
-       try {
-              return ResponseEntity.ok(userRepository.findById(id).get());
-         } catch (Exception e) {
-              return ResponseEntity.badRequest().body(null);
-       }
+        try {
+            return ResponseEntity.ok(userRepository.findById(id).get());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @Override
@@ -83,8 +84,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<List<Notification>> getNotificationsForUser() {
-        try{
-            return ResponseEntity.ok(notificationRepository.findByReceiverId(commonUtils.getUserId()));
+        try {
+            List<Notification> notifications = notificationRepository.findByReceiverId(commonUtils.getUserId());
+            if (notifications.isEmpty()) {
+                return ResponseEntity.ok(List.of());
+            }
+            notifications = notifications.stream().filter(notification -> !notification.getIsRead()).collect(Collectors.toList());
+            return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -92,35 +98,45 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<ReportResponse> getReportForUser(String id) {
-        try{
+        try {
 
             User user = userRepository.findById(id).get();
             ReportResponse reportResponse = new ReportResponse();
             reportResponse.setContactDetails(user.getAdditionalDetails().getContactDetails());
-            reportResponse.setCreditReport(user.getCreditReport());
-            reportResponse.setIdProof(user.getIdentityProof());
+            if (user.getIdentityProof() == null) {
+                reportResponse.setIdProof("Not Available");
+            } else {
+                reportResponse.setIdProof(user.getIdentityProof());
+            }
+            if (user.getCreditReport() == null) {
+                reportResponse.setCreditReport("Not Available");
+            } else {
+                reportResponse.setCreditReport(user.getCreditReport());
+            }
 
             return ResponseEntity.ok(reportResponse);
+        } catch (Exception e) {
+            ReportResponse reportResponse = new ReportResponse();
+
+            return ResponseEntity.ok(reportResponse);
+        }
+    }
+
+    @Override
+    public ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods) {
+        try {
+//            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            paymentMethods.setCustomerId(commonUtils.getUserId());
+            paymentRepository.save(paymentMethods);
+            return ResponseEntity.ok(paymentMethods);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @Override
-    public ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods) {
-        try{
-//            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
-            paymentMethods.setCustomerId(commonUtils.getUserId());
-            paymentRepository.save(paymentMethods);
-            return ResponseEntity.ok(paymentMethods);
-        }catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @Override
     public ResponseEntity<PaymentMethods> getPaymentMethod(String id) {
-        try{
+        try {
             return ResponseEntity.ok(paymentRepository.findById(id).get());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -129,7 +145,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<List<User>> getPendingUsers() {
-        try{
+        try {
             return ResponseEntity.ok(userRepository.findByVerified(false));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -138,13 +154,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<String> saveProperty(String propertyId) {
-        try{
+        try {
             User user = userRepository.findById(commonUtils.getUserId().toString()).get();
             Property property = propertyRepository.findById(propertyId).get();
             List<String> savedProperties = user.getSavedProperties();
-            if(savedProperties.contains(property.getId())){
+            if (savedProperties.contains(property.getId())) {
                 user.getSavedProperties().remove(property.getId());
-            }else{
+            } else {
                 user.getSavedProperties().add(property.getId());
             }
             userRepository.save(user);
@@ -156,7 +172,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<List<Property>> getSavedPropertiesForUser() {
-        try{
+        try {
             User user = userRepository.findById(commonUtils.getUserId().toString()).get();
             List<Property> properties = propertyRepository.findAllById(user.getSavedProperties());
             return ResponseEntity.ok(properties);
@@ -182,16 +198,29 @@ public class UserServiceImpl implements UserService{
     @Override
     public ResponseEntity<?> approveUser(String userId, String status) {
         try {
-            if(status.equals("approve")){
+            if (status.equals("approve")) {
                 User user = userRepository.findById(userId).get();
                 user.setVerified(true);
                 userRepository.save(user);
-            }else{
+            } else {
                 userRepository.deleteById(userId);
             }
             return ResponseEntity.ok("User Approved");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
+        }
+    }
+
+    @Override
+    public ResponseEntity<ReportResponse> patchReports(ReportResponse reportResponse) {
+        try {
+            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            user.setIdentityProof(reportResponse.getIdProof());
+            user.setCreditReport(reportResponse.getCreditReport());
+            userRepository.save(user);
+            return ResponseEntity.ok(reportResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

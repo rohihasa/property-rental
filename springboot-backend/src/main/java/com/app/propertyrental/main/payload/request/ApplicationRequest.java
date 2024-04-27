@@ -18,5 +18,7 @@ public class ApplicationRequest {
     private String emergencyContact;
     private String employmentDetails;
     private String creditReport;
+    private String idProof;
+
 
 }

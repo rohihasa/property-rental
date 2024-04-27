@@ -4,6 +4,7 @@ import com.app.propertyrental.main.models.Complaint;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.models.property.PropertyDetails;
 import com.app.propertyrental.main.payload.request.ApplicationRequest;
+import com.app.propertyrental.main.payload.request.MessageRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -36,7 +37,7 @@ public interface PropertyService {
 
     ResponseEntity<String> updateComplaintStatus(String complaintId, String status);
 
-    ResponseEntity<String> sendMessase(String propertyId, String message);
+    ResponseEntity<String> sendMessase(MessageRequest messageRequest);
 
     ResponseEntity<List<Property>> getOwnerProperties();
 

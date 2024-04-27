@@ -144,6 +144,7 @@ public class AuthServiceImpl implements AuthService {
                 .collect(Collectors.toList());
         HttpHeaders headers = new HttpHeaders();
         return ResponseEntity.ok().header("X-JWT-Token", jwtCookie.toString())
+                .header("Access-Control-Expose-Headers", "X-JWT-Token")
                 .body(new UserInfoResponse(
                         userDetails.getId(),
                         userDetails.getUsername(),

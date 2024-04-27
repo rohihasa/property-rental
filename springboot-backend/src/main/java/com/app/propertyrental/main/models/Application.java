@@ -27,4 +27,5 @@ public class Application {
     private String emergencyContact;
     private String employmentDetails;
     private ObjectId creditReport;
+    private ObjectId idProof;
 }

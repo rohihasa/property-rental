@@ -1,5 +1,6 @@
 package com.app.propertyrental.main.service;
 
+import com.app.propertyrental.main.payload.request.MessageRequest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
@@ -215,6 +216,7 @@ public class PropertyServiceImpl implements PropertyService {
             Application application = new Application();
 
             application.setUserId(userId);
+
             application.setPropertyId(new ObjectId(applicationRequest.getPropertyId()));
             application.setStatus(ApplicationStatus.PENDING);
             application.setMessage(applicationRequest.getMessage());
@@ -224,7 +226,7 @@ public class PropertyServiceImpl implements PropertyService {
             application.setEmergencyContact(applicationRequest.getEmergencyContact());
             application.setEmploymentDetails(applicationRequest.getEmploymentDetails());
             application.setCreditReport(new ObjectId(applicationRequest.getCreditReport()));
-
+            application.setIdProof(new ObjectId(applicationRequest.getIdProof()));
             applicationRepository.save(application);
 
             return ResponseEntity.ok("Application submitted successfully");
@@ -273,14 +275,14 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public ResponseEntity<String> sendMessase(String propertyId, String message) {
+    public ResponseEntity<String> sendMessase(MessageRequest messageRequest) {
         try {
-            Property property = propertyRepository.findById(propertyId).get();
+            Property property = propertyRepository.findById(messageRequest.getPropertyId()).get();
             User user = userRepository.findById(property.getOwnerId().toString()).get();
             Notification notification = new Notification();
             notification.setReceiverId(new ObjectId(user.getId()));
             notification.setSenderId(commonUtils.getUserId());
-            notification.setMessage(message);
+            notification.setMessage(messageRequest.getMessage());
             notification.setCreatedAt(commonUtils.getCurrentDate());
             notification.setIsRead(false);
             notificationService.sendNotification(notification, true);

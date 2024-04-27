@@ -38,9 +38,5 @@ public interface UserService {
     ResponseEntity<?> approveUser(String userId,String status);
 
 
-
-
-
-
-
+    ResponseEntity<ReportResponse> patchReports(ReportResponse reportResponse);
 }
