@@ -1,8 +1,11 @@
 package com.app.propertyrental.main.service;
 
 import com.app.propertyrental.main.models.property.Location;
+import com.app.propertyrental.main.models.property.Review;
 import com.app.propertyrental.main.payload.request.MessageRequest;
+import com.app.propertyrental.main.payload.request.ReviewRequest;
 import com.app.propertyrental.main.repository.LocationRepository;
+import com.app.propertyrental.main.repository.ReviewRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
@@ -38,7 +41,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
 
-//    private final ComplaintRepository complaintRepository;
+    private final ReviewRepository reviewRepository;
 
     private final LocationRepository locationRepository;
 
@@ -50,8 +53,9 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final NotificationService notificationService;
 
-    public PropertyServiceImpl(UserRepository userRepository, PropertyRepository propertyRepository, LocationRepository locationRepository, ApplicationRepository applicationRepository, CommonUtils commonUtils, NotificationService notificationService) {
+    public PropertyServiceImpl(UserRepository userRepository, PropertyRepository propertyRepository, ReviewRepository reviewRepository, LocationRepository locationRepository, ApplicationRepository applicationRepository, CommonUtils commonUtils, NotificationService notificationService) {
         this.propertyRepository = propertyRepository;
+        this.reviewRepository = reviewRepository;
         this.locationRepository = locationRepository;
 //        this.complaintRepository = complaintRepository;
         this.commonUtils = commonUtils;
@@ -321,5 +325,29 @@ public class PropertyServiceImpl implements PropertyService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @Override
+    public ResponseEntity<String> reviewProperty(ReviewRequest reviewRequest) {
+        try{
+            Review review = new Review();
+            review.setUserId(commonUtils.getUserId().toString());
+            review.setPropertyId(reviewRequest.getPropertyId());
+            review.setRating(reviewRequest.getRating());
+            review.setReview(reviewRequest.getReview());
+            reviewRepository.save(review);
+            return ResponseEntity.ok("Review submitted successfully");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Review>> getReviews(String propertyId) {
+       try{
+              return ResponseEntity.ok(reviewRepository.findByPropertyId(propertyId));
+       }catch (Exception e){
+           return ResponseEntity.badRequest().body(null);
+       }
     }
 }

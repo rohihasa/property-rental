@@ -4,8 +4,10 @@ package com.app.propertyrental.main.controller;
 import com.app.propertyrental.main.models.Complaint;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.models.property.PropertyDetails;
+import com.app.propertyrental.main.models.property.Review;
 import com.app.propertyrental.main.payload.request.ApplicationRequest;
 import com.app.propertyrental.main.payload.request.MessageRequest;
+import com.app.propertyrental.main.payload.request.ReviewRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import com.app.propertyrental.main.service.PropertyService;
 import org.springframework.http.ResponseEntity;
@@ -114,16 +116,16 @@ public class PropertyController {
        return propertyService.getFilters();
     }
 
-//    @PostMapping("/review")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<String> reviewProperty(@RequestBody MessageRequest messageRequest) {
-//       return propertyService.reviewProperty(messageRequest);
-//    }
-//
-//    @GetMapping("/reviews/{propertyId}")
-//    public ResponseEntity<List<MessageRequest>> getReviews(@PathVariable String propertyId) {
-//       return propertyService.getReviews(propertyId);
-//    }
+    @PostMapping("/review")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<String> reviewProperty(@RequestBody ReviewRequest reviewRequest) {
+       return propertyService.reviewProperty(reviewRequest);
+    }
+
+    @GetMapping("/reviews/{propertyId}")
+    public ResponseEntity<List<Review>> getReviews(@PathVariable String propertyId) {
+       return propertyService.getReviews(propertyId);
+    }
 
 
 }

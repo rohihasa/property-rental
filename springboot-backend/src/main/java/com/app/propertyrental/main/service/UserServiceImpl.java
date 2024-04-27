@@ -9,7 +9,6 @@ import com.app.propertyrental.main.models.Notification;
 import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
-import com.app.propertyrental.main.repository.NotificationRepository;
 import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.bson.types.ObjectId;

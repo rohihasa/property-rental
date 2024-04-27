@@ -3,8 +3,10 @@ package com.app.propertyrental.main.service;
 import com.app.propertyrental.main.models.Complaint;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.models.property.PropertyDetails;
+import com.app.propertyrental.main.models.property.Review;
 import com.app.propertyrental.main.payload.request.ApplicationRequest;
 import com.app.propertyrental.main.payload.request.MessageRequest;
+import com.app.propertyrental.main.payload.request.ReviewRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -42,6 +44,7 @@ public interface PropertyService {
     ResponseEntity<List<Property>> getOwnerProperties();
 
 
+    ResponseEntity<String> reviewProperty(ReviewRequest reviewRequest);
 
-
+    ResponseEntity<List<Review>> getReviews(String propertyId);
 }
