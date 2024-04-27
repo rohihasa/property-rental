@@ -20,5 +20,4 @@ public class ApplicationRequest {
     private String creditReport;
     private String idProof;
 
-
 }
