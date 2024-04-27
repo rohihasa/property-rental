@@ -5,7 +5,7 @@ import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
 import com.app.propertyrental.common.utils.EmailService;
 import com.app.propertyrental.main.models.Notification;
-import com.app.propertyrental.main.repository.NotificationRepository;
+//import com.app.propertyrental.main.repository.NotificationRepository;
 import com.app.propertyrental.main.models.Notification;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
@@ -17,43 +17,55 @@ import java.util.List;
 
 
 @Service
-public class NotificationServiceImpl implements NotificationService{
+public class NotificationServiceImpl implements NotificationService {
 
-    private NotificationRepository notificationRepository;
+//    private UserRepository notificationRepository;
 
     private CommonUtils commonUtils;
 
     private EmailService emailService;
 
     private UserRepository userRepository;
-    public NotificationServiceImpl(NotificationRepository notificationRepository,CommonUtils commonUtils, EmailService emailService,UserRepository userRepository) {
-        this.notificationRepository = notificationRepository;
-        this.commonUtils=commonUtils;
-        this.userRepository=userRepository;
-        this.emailService=emailService;
+
+    public NotificationServiceImpl(CommonUtils commonUtils, EmailService emailService, UserRepository userRepository) {
+//        this.notificationRepository = notificationRepository;
+        this.commonUtils = commonUtils;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
     }
+
     @Override
-    public void sendNotification(Notification notification,Boolean emailTrigger){
+    public void sendNotification(Notification notification, Boolean emailTrigger) {
 //        ObjectId temp= commonUtils.getUserId();
-        if(emailTrigger){
-            User user=userRepository.findById(notification.getReceiverId().toString()).get();
+        User user = userRepository.findById(notification.getReceiverId().toString()).get();
+        notification.setId(new ObjectId().toString());
+        if (emailTrigger) {
             HashMap<String, String> userMap = new HashMap<>();
             userMap.put(user.getEmail(), user.getUsername());
-            emailService.sendEmails(userMap,notification.getMessage());
+            emailService.sendEmails(userMap, notification.getMessage());
         }
-
-        notificationRepository.save(notification);
+        if (user.getNotifications() == null) {
+            user.setNotifications(Collections.singletonList(notification));
+        } else {
+            user.getNotifications().add(notification);
+        }
+//        notificationRepository.save(notification);
     }
 
     @Override
     public void markAsRead(String notificationId) {
         try {
-            Notification notification = notificationRepository.findById(notificationId).get();
-            notification.setIsRead(true);
-            notificationRepository.save(notification);
+            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            List<Notification> notifications = user.getNotifications();
+            for (Notification notification : notifications) {
+                if (notification.getId().equals(notificationId)) {
+                    notification.setIsRead(true);
+                    userRepository.save(user);
+                    return;
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException("Error while marking notification as read");
-
         }
 
     }
@@ -61,9 +73,12 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     public void deleteNotification(String notificationId) {
 
-        try{
-            notificationRepository.deleteById(notificationId);
-        }catch (Exception e){
+        try {
+            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            List<Notification> notifications = user.getNotifications();
+            notifications.removeIf(notification -> notification.getId().equals(notificationId));
+            userRepository.save(user);
+        } catch (Exception e) {
             throw new RuntimeException("Error while deleting notification");
         }
 
@@ -71,17 +86,12 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     public ResponseEntity<List<Notification>> getNotifications(String userId) {
-       try {
-
-           List<Notification> notifications = notificationRepository.findByReceiverId(new ObjectId(userId));
-
-           if (notifications.isEmpty()) {
-               return ResponseEntity.ok().body(Collections.emptyList());
-           } else {
-               return ResponseEntity.ok().body(notifications);
-           }
-       }catch (Exception e){
-           throw new RuntimeException("Error while fetching notifications");
-       }
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            List<Notification> notifications = user.getNotifications();
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while getting notifications");
+        }
     }
 }

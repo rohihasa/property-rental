@@ -114,6 +114,16 @@ public class PropertyController {
        return propertyService.getFilters();
     }
 
+//    @PostMapping("/review")
+//    @PreAuthorize("hasRole('USER')")
+//    public ResponseEntity<String> reviewProperty(@RequestBody MessageRequest messageRequest) {
+//       return propertyService.reviewProperty(messageRequest);
+//    }
+//
+//    @GetMapping("/reviews/{propertyId}")
+//    public ResponseEntity<List<MessageRequest>> getReviews(@PathVariable String propertyId) {
+//       return propertyService.getReviews(propertyId);
+//    }
 
 
 }

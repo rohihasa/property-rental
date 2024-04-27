@@ -1,5 +1,6 @@
 package com.app.propertyrental.common.models;
 
+import com.app.propertyrental.main.models.Notification;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -50,6 +51,8 @@ public class User {
   private List<String> savedProperties;
 
   private List<String> ownedProperties;
+
+  private List<Notification> notifications;
 
   private String identityProof;
 

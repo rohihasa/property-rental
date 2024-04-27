@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private PropertyRepository propertyRepository;
 
-    private NotificationRepository notificationRepository;
+//    private NotificationRepository notificationRepository;
 
 //    private RoleRepository roleRepository;
 
@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService {
 
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
 //        this.roleRepository = roleRepository;
         this.propertyRepository = propertyRepository;
         this.paymentRepository = paymentRepository;
-        this.notificationRepository = notificationRepository;
+//        this.notificationRepository = notificationRepository;
         this.commonUtils = commonUtils;
     }
 
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<List<Notification>> getNotificationsForUser() {
         try {
-            List<Notification> notifications = notificationRepository.findByReceiverId(commonUtils.getUserId());
+            List<Notification> notifications = userRepository.findById(commonUtils.getUserId().toString()).get().getNotifications();
             if (notifications.isEmpty()) {
                 return ResponseEntity.ok(List.of());
             }
