@@ -1,73 +1,35 @@
-.profilePage {
-    display: flex;
-    height: 100%;
-  }
-  @media (max-width: 1024px) {
-    .profilePage {
-      flex-direction: column;
-      overflow: scroll;
-    }
-  }
-  .profilePage .details {
-    flex: 3;
-    overflow-y: scroll;
-    padding-bottom: 50px;
-  }
-  @media (max-width: 1024px) {
-    .profilePage .details {
-      flex: none;
-      height: max-content;
-    }
-  }
-  .profilePage .details .wrapper {
-    padding-right: 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-  }
-  .profilePage .details .wrapper .title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .profilePage .details .wrapper .title h1 {
-    font-weight: 300;
-  }
-  .profilePage .details .wrapper .title button {
-    padding: 12px 24px;
-    background-color: #fece51;
-    cursor: pointer;
-    border: none;
-  }
-  .profilePage .details .wrapper .info {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .profilePage .details .wrapper .info span {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  .profilePage .details .wrapper .info img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  .profilePage .chatContainer {
-    flex: 2;
-    background-color: #fcf5f3;
-    height: 100%;
-  }
-  @media (max-width: 1024px) {
-    .profilePage .chatContainer {
-      flex: none;
-      height: max-content;
-    }
-  }
-  .profilePage .chatContainer .wrapper {
-    padding: 0px 20px;
-    height: 100%;
-  }
-  
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  display: flex;
+  z-index: 1;
+  /* Remove padding-top here */
+}
+
+.sidebar {
+  /* Your sidebar styles */
+  background-color: #fcf5f3;
+}
+
+.nav-bar {
+  background-color: #fcf5f3;
+  /* Your navbar styles */
+  z-index: 2; /* Set z-index to a higher value */
+}
+.content-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: scroll;
+  padding: 20px;
+  margin-left: 250px;
+}

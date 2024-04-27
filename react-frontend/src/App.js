@@ -6,12 +6,16 @@ import LandingPage from "./components/user/landingPage/LandingPage";
 import Properties from "./components/property/Properties";
 import PropertyView from "./components/property/PropertyView";
 import Profile from "./components/profile/Profile";
+import ManageProperty from "./components/property/ManageProperty";
 function App() {
 
   return (
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
+
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/manage/:propertyId" element={<ManageProperty />} />
         <Route path="/" element={<Signup />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<PrivateRouter />}>

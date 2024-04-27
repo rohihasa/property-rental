@@ -25,6 +25,10 @@ const applyForProperty = (applyRequest) => {
   return httpClient.post(`property/apply`, applyRequest);
 };
 
+const postProperty = (property) => {
+  return httpClient.post(`property/new`, property);
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getPropertyLocations,
@@ -32,5 +36,6 @@ export default {
   getPropertyById,
   saveOrUnsaveProperty,
   sendMessageToOwner,
-  applyForProperty
+  applyForProperty,
+  postProperty
 };
