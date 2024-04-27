@@ -156,29 +156,30 @@ function ListingsPage() {
         alert("Error Sending Application");
       });
   }
-  // useEffect(() => {
-  //   UserService.getUserById(userDetails.id)
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       setRole(response.data.role);
-  //       setVerified(response.data.verified);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  //   setLoading(true); // Set loading to true before the API call
-  //   UserService.getListedProperties()
-  //     .then((response) => {
-  //       setLoading(false); // Set loading to false after the API call
-  //       console.log(response.data);
-  //       setData(response.data);
-  //     })
-  //     .catch((error) => {
-  //       setLoading(false); // Set loading to false after the API call
-  //       console.log(error);
-  //       setData(null);
-  //     });
-  // }, []);
+  useEffect(() => {
+    UserService.getUserById(userDetails.id)
+      .then((response) => {
+        console.log(response.data);
+        setRole(response.data.role);
+        setVerified(response.data.verified);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setLoading(true); // Set loading to true before the API call
+    UserService.getListedProperties()
+      .then((response) => {
+        console.log("LISTED::::",response.data);
+        setLoading(false); // Set loading to false after the API call
+        console.log(response.data);
+        setData(response.data);
+      })
+      .catch((error) => {
+        setLoading(false); // Set loading to false after the API call
+        console.log(error);
+        setData(null);
+      });
+  }, []);
   return (
     <div>
       {loading && <CircularProgress />}

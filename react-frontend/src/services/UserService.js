@@ -18,7 +18,7 @@ const getSavedProperties = () => {
 };
 
 const getListedProperties = () => {
-  return httpClient.get("/user/listed");
+  return httpClient.get("property/owner");
 };
 
 const applyForOwner = () => {

@@ -26,7 +26,7 @@ const applyForProperty = (applyRequest) => {
 };
 
 const postProperty = (property) => {
-  return httpClient.post(`property/new`, property);
+  return httpClient.post(`/property/`, property);
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export

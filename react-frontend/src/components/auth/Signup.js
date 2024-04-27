@@ -38,6 +38,7 @@ const Signup = () => {
     email: "",
     role: "",
     password: "",
+    profileImage: "",
     additionalDetails: {
       firstName: "",
       lastName: "",
@@ -84,6 +85,19 @@ const Signup = () => {
       }, newState)[lastKey] = value;
       return newState;
     });
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+  
+    reader.onloadend = () => {
+      setData({ ...data, profileImage: reader.result });
+    };
+  
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -229,12 +243,14 @@ const Signup = () => {
                 }
                 sx={{ mb: 2 }}
               />
+              <input type="file" onChange={handleImageUpload} />
             </Box>
             <Box sx={{ p: 2, m: 2 }}>
               <Button 
               onClick={handleSubmit}
               variant="contained">SIGN UP</Button>
             </Box>
+
           </Box>
           <Box sx={{ p: 2, m: 2 }}>
             <Typography variant="body1" className={classes.error}>

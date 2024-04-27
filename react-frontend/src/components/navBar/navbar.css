@@ -46,7 +46,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    background-color: #fcf5f3;
+    background-color: #ffffff;
     height: 100%;
   }
   @media (max-width: 1024px) {

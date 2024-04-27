@@ -29,7 +29,7 @@ function Slider({ images }) {
             <img src="/arrow.png" alt="" />
           </div>
           <div className="imgContainer">
-            <img src={`data:image/jpeg;base64,${images[imageIndex]}`} alt="" />
+            <img src={`${images[imageIndex]}`} alt="" />
           </div>
           <div className="arrow" onClick={() => changeSlide("right")}>
             <img src="/arrow.png" className="right" alt="" />
@@ -40,12 +40,12 @@ function Slider({ images }) {
         </div>
       )}
       <div className="bigImage">
-        <img src={`data:image/jpeg;base64,${images[0]}`} alt="" onClick={() => setImageIndex(0)} />
+        <img src={`${images[0]}`} alt="" onClick={() => setImageIndex(0)} />
       </div>
       <div className="smallImages">
         {images.slice(1).map((image, index) => (
           <img
-            src={`data:image/jpeg;base64,${image}`}
+            src={`${image}`}
             alt=""
             key={index}
             onClick={() => setImageIndex(index + 1)}

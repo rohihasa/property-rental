@@ -64,6 +64,7 @@ function Navbar() {
       .then((response) => {
         setUserData(response.data);
         console.log("User response::", response.data);
+        console.log("User data::", response.data.profileImage);
       })
       .catch((error) => {
         console.log(error);
@@ -85,8 +86,8 @@ function Navbar() {
         {user ? (
           <div className="user">
             <img
-              src={`data:image/jpeg;base64,${userData && userData.profileImage}`}
-              alt=""
+            src={`${userData.profileImage}`}
+               alt=""
             />
             <span>{userData && userData.username}</span>
             <div>

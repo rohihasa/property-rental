@@ -200,7 +200,7 @@ function PropertyView() {
                 {userData && (
                   <>
                     <img
-                      src={`data:image/jpeg;base64,${userData.profileImage}`}
+                      src={`${userData.profileImage}`}
                       alt=""
                     />
                     <span>{userData.username}</span>
