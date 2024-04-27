@@ -2,7 +2,7 @@ package com.app.propertyrental.main.service;
 
 import com.app.propertyrental.common.models.ERole;
 import com.app.propertyrental.common.models.User;
-import com.app.propertyrental.common.repository.RoleRepository;
+//import com.app.propertyrental.common.repository.RoleRepository;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
 import com.app.propertyrental.main.models.Notification;
@@ -28,15 +28,15 @@ public class UserServiceImpl implements UserService {
 
     private NotificationRepository notificationRepository;
 
-    private RoleRepository roleRepository;
+//    private RoleRepository roleRepository;
 
     private PaymentRepository paymentRepository;
 
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, RoleRepository roleRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, NotificationRepository notificationRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+//        this.roleRepository = roleRepository;
         this.propertyRepository = propertyRepository;
         this.paymentRepository = paymentRepository;
         this.notificationRepository = notificationRepository;
@@ -181,19 +181,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public ResponseEntity<?> applyForOwner() {
-        try {
-            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
-            user.setRoles(Set.of(roleRepository.findByName(ERole.ROLE_OWNER).get()));
-            user.setVerified(false);
-            userRepository.save(user);
-            return ResponseEntity.ok("Applied for Owner waiting for admin approval");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error");
-        }
-
+   public ResponseEntity<?> applyForOwner() {
+    try {
+        User user = userRepository.findById(commonUtils.getUserId().toString()).get();
+        user.setRoles(Set.of(ERole.ROLE_OWNER));
+        user.setVerified(false);
+        userRepository.save(user);
+        return ResponseEntity.ok("Applied for Owner waiting for admin approval");
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error");
     }
+}
 
     @Override
     public ResponseEntity<?> approveUser(String userId, String status) {

@@ -19,6 +19,4 @@ public class ApplicationRequest {
     private String employmentDetails;
     private String creditReport;
     private String idProof;
-
-
 }

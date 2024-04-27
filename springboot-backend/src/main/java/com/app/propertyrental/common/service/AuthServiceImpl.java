@@ -9,7 +9,7 @@ import com.app.propertyrental.common.payload.request.SignupRequest;
 import com.app.propertyrental.common.payload.response.MessageResponse;
 import com.app.propertyrental.common.payload.response.UserInfoResponse;
 import com.app.propertyrental.common.repository.AdminRepository;
-import com.app.propertyrental.common.repository.RoleRepository;
+//import com.app.propertyrental.common.repository.RoleRepository;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.security.jwt.JwtUtils;
 import com.app.propertyrental.common.security.services.UserDetailsImpl;
@@ -36,17 +36,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+//    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final AdminRepository adminRepository;
 
 //    private final UserService userService;
 
-    AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, AdminRepository adminRepository) {
+    AuthServiceImpl(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserRepository userRepository,  PasswordEncoder encoder, AdminRepository adminRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+//        this.roleRepository = roleRepository;
         this.encoder = encoder;
 //        this.userService = userService;
         this.adminRepository = adminRepository;
@@ -74,48 +74,41 @@ public class AuthServiceImpl implements AuthService {
                 encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = Set.of(signUpRequest.getRole());
-        Set<Role> roles = new HashSet<>();
+        Set<ERole> roles = new HashSet<>();
 
-        if (strRoles.isEmpty()) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        user.setVerified(true);
-                        roles.add(adminRole);
+        strRoles.forEach(role -> {
+            switch (role) {
+                case "admin":
+                    ERole adminRole = ERole.ROLE_ADMIN;
+                    user.setVerified(true);
+                    roles.add(adminRole);
 
-                        break;
-                    case "owner":
-                        Role RecruiterRole = roleRepository.findByName(ERole.ROLE_OWNER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(RecruiterRole);
-                        user.setVerified(false);
-                        break;
+                    break;
+                case "owner":
+                    ERole ownerRole = ERole.ROLE_OWNER;
+                    user.setVerified(false);
+                    roles.add(ownerRole);
 
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        user.setVerified(true);
-                        roles.add(userRole);
-                }
-            });
-        }
+                    break;
 
-        user.setRoles(roles);
+                default:
+                    ERole userRole = ERole.ROLE_USER;
+                    user.setVerified(true);
+                    roles.add(userRole);
+            }
+        });
+
+
+        user.setRoles   (roles);
 
         user.setAdditionalDetails(signUpRequest.getAdditionalDetails());
         user.getAdditionalDetails().setContactDetails(signUpRequest.getContactDetails());
         user.setSavedProperties(List.of());
         user.setOwnedProperties(List.of());
-       User _user =  userRepository.save(user);
+        User _user = userRepository.save(user);
 
-        if(signUpRequest.getRole().equalsIgnoreCase("admin")) {
-            Admin admin= new Admin();
+        if (signUpRequest.getRole().equalsIgnoreCase("admin")) {
+            Admin admin = new Admin();
             admin.setUserId(_user.getId());
             admin.setEmail(_user.getEmail());
             admin.setProfileImage(_user.getProfileImage());
