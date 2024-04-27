@@ -12,6 +12,7 @@ import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.repository.NotificationRepository;
 import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> updateProfile(User user) {
         try {
+
             User _user = userRepository.findById(commonUtils.getUserId().toString()).get();
             Optional.ofNullable(user.getEmail()).ifPresent(_user::setEmail);
             Optional.ofNullable(user.getFirstName()).ifPresent(_user::setFirstName);
@@ -146,17 +148,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<PaymentMethods> getPaymentMethod(String id) {
+    public ResponseEntity<List<PaymentMethods>> getPaymentMethod() {
         try {
-            return ResponseEntity.ok(paymentRepository.findById(id).get());
+                ObjectId userId = commonUtils.getUserId();
+                List<PaymentMethods> paymentMethods = paymentRepository.findByCustomerId(userId);
+            if(!paymentMethods.isEmpty()){
+                return ResponseEntity.ok(paymentMethods);
+            }else{
+                return ResponseEntity.ok(null);
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
     @Override
     public ResponseEntity<List<User>> getPendingUsers() {
         try {
+
             return ResponseEntity.ok(userRepository.findByVerified(false));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -207,14 +216,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> approveUser(String userId, String status) {
         try {
+            User user = userRepository.findById(userId).get();
             if (status.equals("approve")) {
-                User user = userRepository.findById(userId).get();
                 user.setVerified(true);
                 userRepository.save(user);
+                return ResponseEntity.ok("User Approved");
             } else {
-                userRepository.deleteById(userId);
+                user.setVerified(true);
+                user.setRoles(Set.of(ERole.ROLE_USER));
+                userRepository.save(user);
+                return ResponseEntity.ok("User Rejected");
             }
-            return ResponseEntity.ok("User Approved");
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
         }

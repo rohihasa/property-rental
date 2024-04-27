@@ -37,8 +37,8 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @PatchMapping("/{userId}")
-    public ResponseEntity<?> updateProfile(@PathVariable("userId") String userId,@RequestBody User user) {
+    @PatchMapping("/")
+    public ResponseEntity<?> updateProfile(@RequestBody User user) {
         return userService.updateProfile(user);
     }
 
@@ -63,10 +63,11 @@ public class UserController {
         return userService.addPaymentMethod(paymentMethods);
     }
 
-    @GetMapping("/paymentMethod/{id}")
-    public ResponseEntity<PaymentMethods> getPaymentMethod(@PathVariable("id") String id) {
-        return userService.getPaymentMethod(id);
+    @GetMapping("/paymentMethod")
+    public ResponseEntity<List<PaymentMethods>> getPaymentMethods() {
+        return userService.getPaymentMethod();
     }
+
 
     @GetMapping("/pending")
     @PreAuthorize("hasRole('ADMIN')")

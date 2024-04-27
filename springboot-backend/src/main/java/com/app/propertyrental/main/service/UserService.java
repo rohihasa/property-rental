@@ -25,7 +25,7 @@ public interface UserService {
 
     ResponseEntity<PaymentMethods> addPaymentMethod(PaymentMethods paymentMethods);
 
-    ResponseEntity<PaymentMethods> getPaymentMethod(String id);
+    ResponseEntity<List<PaymentMethods>> getPaymentMethod();
 
     ResponseEntity<List<User>> getPendingUsers();
 

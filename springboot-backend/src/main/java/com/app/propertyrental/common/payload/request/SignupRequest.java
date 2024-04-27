@@ -35,7 +35,5 @@ public class SignupRequest {
 
   private AdditionalDetails additionalDetails;
 
-  private ContactDetails contactDetails;
-
 
 }

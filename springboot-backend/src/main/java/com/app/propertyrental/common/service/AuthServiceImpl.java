@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
         user.setRoles(roles);
         user.setFirstName(signUpRequest.getAdditionalDetails().getFirstName());
         user.setLastName(signUpRequest.getAdditionalDetails().getLastName());
-        user.setContactDetails(signUpRequest.getContactDetails());
+        user.setContactDetails(signUpRequest.getAdditionalDetails().getContactDetails());
         if (signUpRequest.getProfileImage() != null && !signUpRequest.getProfileImage().isEmpty()) {
             user.setProfileImage(signUpRequest.getProfileImage());
         } else {
