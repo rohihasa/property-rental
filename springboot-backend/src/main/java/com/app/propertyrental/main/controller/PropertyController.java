@@ -75,22 +75,22 @@ public class PropertyController {
        return propertyService.applyForProperty(applicationRequest);
     }
 
-    @GetMapping("/{propertyId}/complaints")
-    public ResponseEntity<List<Complaint>> getComplaints(@PathVariable String propertyId) {
-       return propertyService.getComplaints(propertyId);
-    }
-
-    @PostMapping("/complaint")
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
-    public ResponseEntity<String> createComplaint(@RequestBody Complaint complaint) {
-       return propertyService.createComplaint( complaint);
-    }
-
-    @PatchMapping("/complaint/{complaintId}/status/{status}")
-    @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<String> updateComplaintStatus(@PathVariable String complaintId, @PathVariable String status) {
-       return propertyService.updateComplaintStatus(complaintId, status);
-    }
+//    @GetMapping("/{propertyId}/complaints")
+//    public ResponseEntity<List<Complaint>> getComplaints(@PathVariable String propertyId) {
+//       return propertyService.getComplaints(propertyId);
+//    }
+//
+//    @PostMapping("/complaint")
+//    @PreAuthorize("hasRole('USER') or hasRole('OWNER')")
+//    public ResponseEntity<String> createComplaint(@RequestBody Complaint complaint) {
+//       return propertyService.createComplaint( complaint);
+//    }
+//
+//    @PatchMapping("/complaint/{complaintId}/status/{status}")
+//    @PreAuthorize("hasRole('OWNER')")
+//    public ResponseEntity<String> updateComplaintStatus(@PathVariable String complaintId, @PathVariable String status) {
+//       return propertyService.updateComplaintStatus(complaintId, status);
+//    }
 
     @PostMapping("/message")
     public ResponseEntity<String> sendMessase( @RequestBody MessageRequest messageRequest) {

@@ -31,11 +31,11 @@ public interface PropertyService {
 
     ResponseEntity<String> applyForProperty(ApplicationRequest applicationRequest);
 
-    ResponseEntity<List<Complaint>> getComplaints(String propertyId);
-
-    ResponseEntity<String> createComplaint(Complaint complaint);
-
-    ResponseEntity<String> updateComplaintStatus(String complaintId, String status);
+//    ResponseEntity<List<Complaint>> getComplaints(String propertyId);
+//
+//    ResponseEntity<String> createComplaint(Complaint complaint);
+//
+//    ResponseEntity<String> updateComplaintStatus(String complaintId, String status);
 
     ResponseEntity<String> sendMessase(MessageRequest messageRequest);
 

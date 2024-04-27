@@ -1,6 +1,8 @@
 package com.app.propertyrental.main.service;
 
+import com.app.propertyrental.main.models.property.Location;
 import com.app.propertyrental.main.payload.request.MessageRequest;
+import com.app.propertyrental.main.repository.LocationRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
@@ -20,18 +22,13 @@ import com.app.propertyrental.main.models.property.PropertyDetails;
 import com.app.propertyrental.main.payload.request.ApplicationRequest;
 import com.app.propertyrental.main.payload.response.FiltersResponse;
 import com.app.propertyrental.main.repository.ApplicationRepository;
-import com.app.propertyrental.main.repository.ComplaintRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.bson.types.ObjectId;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +36,9 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
 
-    private final ComplaintRepository complaintRepository;
+//    private final ComplaintRepository complaintRepository;
+
+    private final LocationRepository locationRepository;
 
     private final CommonUtils commonUtils;
 
@@ -49,9 +48,10 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final NotificationService notificationService;
 
-    public PropertyServiceImpl(UserRepository userRepository, PropertyRepository propertyRepository, ApplicationRepository applicationRepository, ComplaintRepository complaintRepository, CommonUtils commonUtils, NotificationService notificationService) {
+    public PropertyServiceImpl(UserRepository userRepository, PropertyRepository propertyRepository, LocationRepository locationRepository, ApplicationRepository applicationRepository, CommonUtils commonUtils, NotificationService notificationService) {
         this.propertyRepository = propertyRepository;
-        this.complaintRepository = complaintRepository;
+        this.locationRepository = locationRepository;
+//        this.complaintRepository = complaintRepository;
         this.commonUtils = commonUtils;
         this.applicationRepository = applicationRepository;
         this.notificationService = notificationService;
@@ -104,7 +104,12 @@ public class PropertyServiceImpl implements PropertyService {
             if (results.isEmpty()) {
                 throw new RuntimeException("Zipcode not found");
             } else {
+
                 Map<String, Object> locationData = results.get(0);
+                String displayName = (String) locationData.get("display_name");
+                String[] splitDisplayName = displayName.split(",");
+                String city = splitDisplayName[1].trim();
+                locationRepository.save(Location.builder().name(city).build());
                 property.getAddress().setLatitude((String) locationData.get("lat"));
                 property.getAddress().setLongitude((String) locationData.get("lon"));
 //                propertyRepository.save(property);
@@ -236,43 +241,43 @@ public class PropertyServiceImpl implements PropertyService {
         }
     }
 
-    @Override
-    public ResponseEntity<List<Complaint>> getComplaints(String propertyId) {
-        try {
-            return ResponseEntity.ok(complaintRepository.findByPropertyId(new ObjectId(propertyId)));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
+//    @Override
+//    public ResponseEntity<List<Complaint>> getComplaints(String propertyId) {
+//        try {
+//            return ResponseEntity.ok(complaintRepository.findByPropertyId(new ObjectId(propertyId)));
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//    }
 
-    @Override
-    public ResponseEntity<String> createComplaint(Complaint complaint) {
-        try {
-            complaint.setUserId(commonUtils.getUserId());
-            complaint.setPropertyId(complaint.getPropertyId());
-            complaintRepository.save(complaint);
-            return ResponseEntity.ok("Complaint created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error");
-        }
-    }
+//    @Override
+//    public ResponseEntity<String> createComplaint(Complaint complaint) {
+//        try {
+//            complaint.setUserId(commonUtils.getUserId());
+//            complaint.setPropertyId(complaint.getPropertyId());
+//            complaintRepository.save(complaint);
+//            return ResponseEntity.ok("Complaint created successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error");
+//        }
+//    }
 
-    @Override
-    public ResponseEntity<String> updateComplaintStatus(String complaintId, String status) {
-        try {
-            Complaint complaint = complaintRepository.findById(complaintId).get();
-            if (status.equals("resolve")) {
-                complaint.setIsResolved(true);
-            } else {
-                complaint.setIsResolved(false);
-            }
-            complaint.setUpdatedAt(commonUtils.getCurrentDate());
-            complaintRepository.save(complaint);
-            return ResponseEntity.ok("Complaint updated successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error");
-        }
-    }
+//    @Override
+//    public ResponseEntity<String> updateComplaintStatus(String complaintId, String status) {
+//        try {
+//            Complaint complaint = complaintRepository.findById(complaintId).get();
+//            if (status.equals("resolve")) {
+//                complaint.setIsResolved(true);
+//            } else {
+//                complaint.setIsResolved(false);
+//            }
+//            complaint.setUpdatedAt(commonUtils.getCurrentDate());
+//            complaintRepository.save(complaint);
+//            return ResponseEntity.ok("Complaint updated successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error");
+//        }
+//    }
 
     @Override
     public ResponseEntity<String> sendMessase(MessageRequest messageRequest) {

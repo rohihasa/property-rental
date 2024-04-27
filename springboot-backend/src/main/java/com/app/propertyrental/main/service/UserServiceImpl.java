@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> updateProfile(User user) {
         try {
-            userRepository.save(user);
+            User _user = userRepository.findById(commonUtils.getUserId().toString()).get();
+            Optional.ofNullable(user.getEmail()).ifPresent(_user::setEmail);
+            Optional.ofNullable(user.getFirstName()).ifPresent(_user::setFirstName);
+            Optional.ofNullable(user.getLastName()).ifPresent(_user::setLastName);
+            Optional.ofNullable(user.getContactDetails()).ifPresent(_user::setContactDetails);
+            Optional.ofNullable(user.getProfileImage()).ifPresent(_user::setProfileImage);
+            Optional.ofNullable(user.getCreditReport()).ifPresent(_user::setCreditReport);
+            Optional.ofNullable(user.getIdentityProof()).ifPresent(_user::setIdentityProof);
+            userRepository.save(_user);
+
+
             return ResponseEntity.ok("Profile Updated");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
