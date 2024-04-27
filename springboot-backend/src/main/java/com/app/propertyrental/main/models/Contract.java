@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +28,5 @@ public class Contract {
     private String employmentDetails;
     private Boolean autoDebit;
     private ObjectId rentalAgreement;
+    List<Transaction> transactions;
 }

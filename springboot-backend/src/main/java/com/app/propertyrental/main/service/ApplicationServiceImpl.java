@@ -11,12 +11,13 @@ import com.app.propertyrental.main.payload.request.TransactionRequest;
 import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.ContractRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
-import com.app.propertyrental.main.repository.TransactionRepository;
+//import com.app.propertyrental.main.repository.TransactionRepository;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
@@ -26,20 +27,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final CommonUtils commonUtils;
 
     private final ContractRepository contractRepository;
-    private final TransactionRepository transactionRepository;
+//    private final TransactionRepository transactionRepository;
 
     private final PropertyRepository propertyRepository;
 
     public ApplicationServiceImpl(ApplicationRepository applicationRepository,
                                   CommonUtils commonUtils,
                                   ContractRepository contractRepository,
-                                  TransactionRepository transactionRepository,
+//                                  TransactionRepository transactionRepository,
                                   PropertyRepository propertyRepository) {
 
         this.applicationRepository = applicationRepository;
         this.commonUtils = commonUtils;
         this.contractRepository = contractRepository;
-        this.transactionRepository = transactionRepository;
+//        this.transactionRepository = transactionRepository;
         this.propertyRepository = propertyRepository;
     }
 
@@ -79,8 +80,8 @@ public class ApplicationServiceImpl implements ApplicationService {
             if (status.equals(ApplicationStatus.MOVED_IN)) {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
                 property.setIsAvailable(false);
-                createTransaction(transactionRequest);
-                createContract(application, property);
+//                createTransaction(transactionRequest);
+                createContract(transactionRequest,application, property);
                 propertyRepository.save(property);
             }else if(status.equals(ApplicationStatus.CANCELLED)){
                 applicationRepository.delete(application);
@@ -94,8 +95,32 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
+   @Override
+public ResponseEntity<Transaction> createTransactionForProperty(TransactionRequest transactionRequest) {
+    try {
+        // Create a new transaction
+        Transaction transaction = new Transaction();
+        transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
+        transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
+        transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
+        transaction.setPaymentDate(commonUtils.getCurrentDate());
+        transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
 
-    public void createContract(Application application, Property property) {
+        // Find the contract associated with the property
+        Contract contract = contractRepository.findByPropertyId(transaction.getPropertyId()).get(0);
+        // Add the transaction to the contract's transactions
+        contract.getTransactions().add(transaction);
+        // Save the updated contract
+        contractRepository.save(contract);
+
+        return ResponseEntity.ok(transaction);
+    } catch (Exception e) {
+        throw new RuntimeException("Error while creating transaction");
+    }
+}
+
+
+    public void createContract(TransactionRequest transactionRequest,Application application, Property property) {
         try {
             Contract contract = new Contract();
             contract.setApplicationId(new ObjectId(application.getId()));
@@ -108,6 +133,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             contract.setEmergencyContact(application.getEmergencyContact());
             contract.setEmploymentDetails(application.getEmploymentDetails());
             contract.setRentalAgreement(property.getPropertyDetails().getRentalAgreement());
+            contract.getTransactions().add(createTransaction(transactionRequest));
             Contract _contract = contractRepository.save(contract);
 
         } catch (Exception e) {
@@ -115,8 +141,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
-    @Override
-    public ResponseEntity<Transaction> createTransaction(TransactionRequest transactionRequest) {
+
+    public Transaction createTransaction(TransactionRequest transactionRequest) {
         try {
             Transaction transaction = new Transaction();
             transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
@@ -125,29 +151,40 @@ public class ApplicationServiceImpl implements ApplicationService {
             transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
             transaction.setPaymentDate(commonUtils.getCurrentDate());
             transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
-            transactionRepository.save(transaction);
-            return ResponseEntity.ok(transaction);
+            return transaction;
         } catch (Exception e) {
             throw new RuntimeException("Error while creating transaction");
         }
     }
 
 
-    @Override
-    public ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String applicationId) {
-        try {
-            return ResponseEntity.ok(transactionRepository.findByApplicationId(new ObjectId(applicationId)));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+   @Override
+public ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String propertyId) {
+    try {
+        // Retrieve contracts associated with the property
+        List<Contract> contracts = contractRepository.findByPropertyId(new ObjectId(propertyId));
+        // Retrieve transactions from the contracts
+        List<Transaction> transactions = contracts.stream()
+            .flatMap(contract -> contract.getTransactions().stream())
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(transactions);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
     }
+}
 
-    @Override
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        try {
-            return ResponseEntity.ok(transactionRepository.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+@Override
+public ResponseEntity<List<Transaction>> getAllTransactions() {
+    try {
+        // Retrieve all contracts
+        List<Contract> contracts = contractRepository.findAll();
+        // Retrieve all transactions from all contracts
+        List<Transaction> transactions = contracts.stream()
+            .flatMap(contract -> contract.getTransactions().stream())
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(transactions);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
     }
+}
 }
