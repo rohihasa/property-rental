@@ -27,6 +27,6 @@ public class Contract {
     private String emergencyContact;
     private String employmentDetails;
     private Boolean autoDebit;
-    private ObjectId rentalAgreement;
+    private String rentalAgreement;
     List<Transaction> transactions;
 }

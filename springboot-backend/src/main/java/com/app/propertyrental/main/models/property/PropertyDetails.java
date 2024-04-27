@@ -16,6 +16,6 @@ public class PropertyDetails {
     private Date leaseStartDate;
     private Date leaseEndDate;
     private Date applicationDeadline;
-    private ObjectId rentalAgreement;
+    private String rentalAgreement;
     private double rentPerMonth;
 }

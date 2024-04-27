@@ -29,7 +29,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     public ResponseEntity<List<Application>> getAllApplicationsOfUser() {
         return applicationService.getAllApplicationsOfUser();
     }
@@ -41,7 +41,7 @@ public class ApplicationController {
     }
 
     @PatchMapping("/{applicationId}/{status}")
-    @PreAuthorize("hasRole('OWNER')")
+//    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<?> updateApplicationStatus(@PathVariable("applicationId") String applicationId, @PathVariable("status") ApplicationStatus status,@RequestBody(required = false) TransactionRequest transactionRequest) {
         return applicationService.updateApplicationStatus(applicationId, status,transactionRequest);
     }

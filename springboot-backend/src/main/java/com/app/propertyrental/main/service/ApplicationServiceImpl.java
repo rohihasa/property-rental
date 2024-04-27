@@ -74,16 +74,16 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status,TransactionRequest transactionRequest) {
+    public ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status, TransactionRequest transactionRequest) {
         try {
             Application application = applicationRepository.findById(applicationId).get();
             if (status.equals(ApplicationStatus.MOVED_IN)) {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
                 property.setIsAvailable(false);
 //                createTransaction(transactionRequest);
-                createContract(transactionRequest,application, property);
+                createContract(transactionRequest, application, property);
                 propertyRepository.save(property);
-            }else if(status.equals(ApplicationStatus.CANCELLED)){
+            } else if (status.equals(ApplicationStatus.CANCELLED)) {
                 applicationRepository.delete(application);
                 return ResponseEntity.ok("Application cancelled");
             }
@@ -95,32 +95,32 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
-   @Override
-public ResponseEntity<Transaction> createTransactionForProperty(TransactionRequest transactionRequest) {
-    try {
-        // Create a new transaction
-        Transaction transaction = new Transaction();
-        transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
-        transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
-        transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
-        transaction.setPaymentDate(commonUtils.getCurrentDate());
-        transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
+    @Override
+    public ResponseEntity<Transaction> createTransactionForProperty(TransactionRequest transactionRequest) {
+        try {
+            // Create a new transaction
+            Transaction transaction = new Transaction();
+            transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
+            transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
+            transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
+            transaction.setPaymentDate(commonUtils.getCurrentDate());
+            transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
 
-        // Find the contract associated with the property
-        Contract contract = contractRepository.findByPropertyId(transaction.getPropertyId()).get(0);
-        // Add the transaction to the contract's transactions
-        contract.getTransactions().add(transaction);
-        // Save the updated contract
-        contractRepository.save(contract);
+            // Find the contract associated with the property
+            Contract contract = contractRepository.findByPropertyId(transaction.getPropertyId()).get(0);
+            // Add the transaction to the contract's transactions
+            contract.getTransactions().add(transaction);
+            // Save the updated contract
+            contractRepository.save(contract);
 
-        return ResponseEntity.ok(transaction);
-    } catch (Exception e) {
-        throw new RuntimeException("Error while creating transaction");
+            return ResponseEntity.ok(transaction);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while creating transaction");
+        }
     }
-}
 
 
-    public void createContract(TransactionRequest transactionRequest,Application application, Property property) {
+    public void createContract(TransactionRequest transactionRequest, Application application, Property property) {
         try {
             Contract contract = new Contract();
             contract.setApplicationId(new ObjectId(application.getId()));
@@ -133,7 +133,12 @@ public ResponseEntity<Transaction> createTransactionForProperty(TransactionReque
             contract.setEmergencyContact(application.getEmergencyContact());
             contract.setEmploymentDetails(application.getEmploymentDetails());
             contract.setRentalAgreement(property.getPropertyDetails().getRentalAgreement());
-            contract.getTransactions().add(createTransaction(transactionRequest));
+
+            if (contract.getTransactions() == null) {
+                contract.setTransactions(List.of(createTransaction(transactionRequest)));
+            } else {
+                contract.getTransactions().add(createTransaction(transactionRequest));
+            }
             Contract _contract = contractRepository.save(contract);
 
         } catch (Exception e) {
@@ -158,33 +163,33 @@ public ResponseEntity<Transaction> createTransactionForProperty(TransactionReque
     }
 
 
-   @Override
-public ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String propertyId) {
-    try {
-        // Retrieve contracts associated with the property
-        List<Contract> contracts = contractRepository.findByPropertyId(new ObjectId(propertyId));
-        // Retrieve transactions from the contracts
-        List<Transaction> transactions = contracts.stream()
-            .flatMap(contract -> contract.getTransactions().stream())
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(transactions);
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().build();
+    @Override
+    public ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String propertyId) {
+        try {
+            // Retrieve contracts associated with the property
+            List<Contract> contracts = contractRepository.findByPropertyId(new ObjectId(propertyId));
+            // Retrieve transactions from the contracts
+            List<Transaction> transactions = contracts.stream()
+                    .flatMap(contract -> contract.getTransactions().stream())
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
-}
 
-@Override
-public ResponseEntity<List<Transaction>> getAllTransactions() {
-    try {
-        // Retrieve all contracts
-        List<Contract> contracts = contractRepository.findAll();
-        // Retrieve all transactions from all contracts
-        List<Transaction> transactions = contracts.stream()
-            .flatMap(contract -> contract.getTransactions().stream())
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(transactions);
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().build();
+    @Override
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        try {
+            // Retrieve all contracts
+            List<Contract> contracts = contractRepository.findAll();
+            // Retrieve all transactions from all contracts
+            List<Transaction> transactions = contracts.stream()
+                    .flatMap(contract -> contract.getTransactions().stream())
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
-}
 }

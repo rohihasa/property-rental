@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.http.HttpStatus;
+
 import java.util.Map;
 
 import com.app.propertyrental.common.models.User;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,12 +96,8 @@ public class PropertyServiceImpl implements PropertyService {
         final String url = "https://nominatim.openstreetmap.org/search?postalcode=" + zipCode + "&format=json&countrycodes=US";
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Map<String, Object>>>() {
+            });
             List<Map<String, Object>> results = response.getBody();
             if (results.isEmpty()) {
                 throw new RuntimeException("Zipcode not found");
@@ -126,10 +124,28 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public ResponseEntity<Property> updateProperty(String propertyId, Property property) {
         try {
-            Property property1 = propertyRepository.findById(propertyId).get();
-            //TODO : cehck update property
-            property.setId(property1.getId());
-            return ResponseEntity.ok(propertyRepository.save(property));
+            Property _property = propertyRepository.findById(propertyId).get();
+
+            Optional.ofNullable(property.getName()).ifPresent(_property::setName);
+            Optional.ofNullable(property.getDescription()).ifPresent(_property::setDescription);
+            Optional.ofNullable(property.getBathrooms()).ifPresent(_property::setBathrooms);
+            Optional.ofNullable(property.getAddress()).ifPresent(_property::setAddress);
+            Optional.ofNullable(property.getSize()).ifPresent(_property::setSize);
+            Optional.ofNullable(property.getYearBuilt()).ifPresent(_property::setYearBuilt);
+            Optional.ofNullable(property.getPrivacySetting()).ifPresent(_property::setPrivacySetting);
+            Optional.ofNullable(property.getIsActive()).ifPresent(_property::setIsActive);
+            _property.setUpdatedAt(commonUtils.getCurrentDate());
+            Optional.ofNullable(property.getAmenities()).ifPresent(_property::setAmenities);
+            Optional.ofNullable(property.getPetsAllowed()).ifPresent(_property::setPetsAllowed);
+            Optional.ofNullable(property.getImages()).ifPresent(_property::setImages);
+            Optional.ofNullable(property.getPropertyDetails()).ifPresent(_property::setPropertyDetails);
+            Optional.ofNullable(property.getIsAvailable()).ifPresent(_property::setIsAvailable);
+            Optional.ofNullable(property.getIsFurnished()).ifPresent(_property::setIsFurnished);
+            Optional.ofNullable(property.getPrice()).ifPresent(_property::setPrice);
+            Optional.ofNullable(property.getType()).ifPresent(_property::setType);
+            Optional.ofNullable(property.getBedrooms()).ifPresent(_property::setBedrooms);
+            Optional.ofNullable(property.getVerificationStatus()).ifPresent(_property::setVerificationStatus);
+            return ResponseEntity.ok(propertyRepository.save(_property));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -230,8 +246,8 @@ public class PropertyServiceImpl implements PropertyService {
             application.setMoveInDate(applicationRequest.getMoveInDate());
             application.setEmergencyContact(applicationRequest.getEmergencyContact());
             application.setEmploymentDetails(applicationRequest.getEmploymentDetails());
-            application.setCreditReport(new ObjectId(applicationRequest.getCreditReport()));
-            application.setIdProof(new ObjectId(applicationRequest.getIdProof()));
+            application.setCreditReport(applicationRequest.getCreditReport());
+            application.setIdProof(applicationRequest.getIdProof());
             applicationRepository.save(application);
 
             return ResponseEntity.ok("Application submitted successfully");

@@ -26,6 +26,6 @@ public class Application {
     private Date moveInDate;
     private String emergencyContact;
     private String employmentDetails;
-    private ObjectId creditReport;
-    private ObjectId idProof;
+    private String creditReport;
+    private String idProof;
 }
