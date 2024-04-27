@@ -7,12 +7,14 @@ import Properties from "./components/property/Properties";
 import PropertyView from "./components/property/PropertyView";
 import Profile from "./components/profile/Profile";
 import ManageProperty from "./components/property/ManageProperty";
+import AdminPage from "./components/admin/AdminPage";
 function App() {
 
   return (
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<AdminPage />} />
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/manage/:propertyId" element={<ManageProperty />} />

@@ -25,6 +25,14 @@ const applyForOwner = () => {
   return httpClient.post("/user/apply");
 };
 
+const getUsers = () => {
+  return httpClient.get("/user");
+};
+
+const getTransactions=()=>{
+  return httpClient.get("/user/transactions");
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   userLogin,
@@ -32,5 +40,7 @@ export default {
   userSignup,
   getSavedProperties,
   getListedProperties,
-  applyForOwner
+  applyForOwner,
+  getUsers,
+  getTransactions
 };
