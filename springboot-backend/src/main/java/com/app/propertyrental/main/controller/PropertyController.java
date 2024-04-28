@@ -52,6 +52,12 @@ public class PropertyController {
     }
 
 
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Property>> getPendingProperties() {
+       return propertyService.getPendingProperties();
+    }
+
     @PatchMapping("/{propertyId}/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateVerificationStatus(@PathVariable String propertyId, @PathVariable String status) {

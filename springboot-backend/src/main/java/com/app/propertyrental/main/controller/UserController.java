@@ -91,10 +91,14 @@ public class UserController {
         return userService.applyForOwner();
     }
 
+
+
     @PatchMapping("/approveUser/{userId}/{status}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> approveUser(@PathVariable("userId") String userId,@PathVariable("status") String status) {
         return userService.approveUser(userId, status);
     }
+
+
 
 }

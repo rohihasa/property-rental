@@ -162,7 +162,7 @@ public class PropertyServiceImpl implements PropertyService {
     public ResponseEntity<String> updateVerificationStatus(String propertyId, String status) {
         try {
             Property property = propertyRepository.findById(propertyId).get();
-            if (status.equals("accept")) {
+            if (status.equals("approve")) {
                 property.setVerificationStatus(true);
                 propertyRepository.save(property);
                 return ResponseEntity.ok("Property Verified");
@@ -365,6 +365,17 @@ public class PropertyServiceImpl implements PropertyService {
     public ResponseEntity<List<Review>> getReviews(String propertyId) {
         try {
             return ResponseEntity.ok(reviewRepository.findByPropertyId(propertyId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Property>> getPendingProperties() {
+        try {
+          List<Property> properties = propertyRepository.findAll();
+            return ResponseEntity.ok(properties.stream().filter(property -> !property.getVerificationStatus()).collect(Collectors.toList()));
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }

@@ -47,4 +47,6 @@ public interface PropertyService {
     ResponseEntity<String> reviewProperty(ReviewRequest reviewRequest);
 
     ResponseEntity<List<Review>> getReviews(String propertyId);
+
+    ResponseEntity<List<Property>> getPendingProperties();
 }
