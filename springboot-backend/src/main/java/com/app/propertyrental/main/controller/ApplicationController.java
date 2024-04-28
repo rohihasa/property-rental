@@ -5,6 +5,7 @@ import com.app.propertyrental.main.models.Application;
 import com.app.propertyrental.main.models.ApplicationStatus;
 import com.app.propertyrental.main.models.Transaction;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
+import com.app.propertyrental.main.payload.response.ApplicationResponse;
 import com.app.propertyrental.main.service.ApplicationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,19 +25,19 @@ public class ApplicationController {
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    public ResponseEntity<List<Application>> getAllApplications() {
+    public ResponseEntity<List<ApplicationResponse>> getAllApplications() {
         return applicationService.getAllApplications();
     }
 
     @GetMapping("/user")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    public ResponseEntity<List<Application>> getAllApplicationsOfUser() {
+    public ResponseEntity<List<ApplicationResponse>> getAllApplicationsOfUser() {
         return applicationService.getAllApplicationsOfUser();
     }
 
     @GetMapping("/property/{propertyId}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<List<Application>> getAllApplicationsOfProperty(@PathVariable("propertyId") String propertyId) {
+    public ResponseEntity<List<ApplicationResponse>> getAllApplicationsOfProperty(@PathVariable("propertyId") String propertyId) {
         return applicationService.getApplicationsByPropertyId(propertyId);
     }
 

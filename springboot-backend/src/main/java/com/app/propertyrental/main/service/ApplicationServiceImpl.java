@@ -1,6 +1,7 @@
 package com.app.propertyrental.main.service;
 
 
+import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
 import com.app.propertyrental.main.models.Application;
 import com.app.propertyrental.main.models.ApplicationStatus;
@@ -8,6 +9,7 @@ import com.app.propertyrental.main.models.Contract;
 import com.app.propertyrental.main.models.Transaction;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
+import com.app.propertyrental.main.payload.response.ApplicationResponse;
 import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.ContractRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
@@ -30,48 +32,60 @@ public class ApplicationServiceImpl implements ApplicationService {
 //    private final TransactionRepository transactionRepository;
 
     private final PropertyRepository propertyRepository;
+    private  final UserRepository userRepository;
 
     public ApplicationServiceImpl(ApplicationRepository applicationRepository,
                                   CommonUtils commonUtils,
                                   ContractRepository contractRepository,
 //                                  TransactionRepository transactionRepository,
-                                  PropertyRepository propertyRepository) {
+                                  PropertyRepository propertyRepository, UserRepository userRepository) {
 
         this.applicationRepository = applicationRepository;
         this.commonUtils = commonUtils;
         this.contractRepository = contractRepository;
 //        this.transactionRepository = transactionRepository;
         this.propertyRepository = propertyRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public ResponseEntity<List<Application>> getAllApplicationsOfUser() {
+    public ResponseEntity<List<ApplicationResponse>> getAllApplicationsOfUser() {
         try {
             ObjectId userId = commonUtils.getUserId();
             List<Application> applications = applicationRepository.findByUserId(userId);
-            return ResponseEntity.ok(applications);
+            List<ApplicationResponse> applicationResponses = getApplicationResponses(applications);
+
+            return ResponseEntity.ok(applicationResponses);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+
+    @Override
+    public ResponseEntity<List<ApplicationResponse>> getAllApplications() {
+        try {
+            List<Application> applications = applicationRepository.findAll();
+            List<ApplicationResponse> applicationResponses = getApplicationResponses(applications);
+            return ResponseEntity.ok(applicationResponses);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @Override
-    public ResponseEntity<List<Application>> getAllApplications() {
+    public ResponseEntity<List<ApplicationResponse>> getApplicationsByPropertyId(String propertyId) {
         try {
-            return ResponseEntity.ok(applicationRepository.findAll());
+            List<Application> applications = applicationRepository.findByPropertyId(new ObjectId(propertyId));
+            List<ApplicationResponse> applicationResponses = getApplicationResponses(applications);
+            return ResponseEntity.ok(applicationResponses);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @Override
-    public ResponseEntity<List<Application>> getApplicationsByPropertyId(String propertyId) {
-        try {
-            return ResponseEntity.ok(applicationRepository.findByPropertyId(new ObjectId(propertyId)));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+
 
     @Override
     public ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status, TransactionRequest transactionRequest) {
@@ -192,4 +206,20 @@ public class ApplicationServiceImpl implements ApplicationService {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    private  List<ApplicationResponse> getApplicationResponses(List<Application> applications) {
+        return applications.stream()
+                .map(application -> {
+                    ApplicationResponse applicationResponse = new ApplicationResponse();
+                    applicationResponse.setUserId(userRepository.findById(application.getUserId().toString()).get());
+                    applicationResponse.setProperty(propertyRepository.findById(application.getPropertyId().toString()).get());
+                    applicationResponse.setStatus(application.getStatus());
+                    applicationResponse.setCreatedAt(application.getCreatedAt());
+                    applicationResponse.setMoveInDate(application.getMoveInDate());
+                    applicationResponse.setEmergencyContact(application.getEmergencyContact());
+                    applicationResponse.setEmploymentDetails(application.getEmploymentDetails());
+                    return applicationResponse;
+                }).collect(Collectors.toList());
+    }
+
 }

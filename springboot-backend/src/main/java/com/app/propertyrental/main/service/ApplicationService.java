@@ -6,17 +6,18 @@ import com.app.propertyrental.main.models.ApplicationStatus;
 import com.app.propertyrental.main.models.Transaction;
 import com.app.propertyrental.main.models.Contract;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
+import com.app.propertyrental.main.payload.response.ApplicationResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface ApplicationService {
 
-    ResponseEntity<List<Application>> getAllApplicationsOfUser();
+    ResponseEntity<List<ApplicationResponse>> getAllApplicationsOfUser();
 
-    ResponseEntity<List<Application>> getAllApplications();
+    ResponseEntity<List<ApplicationResponse>> getAllApplications();
 
-    ResponseEntity<List<Application>> getApplicationsByPropertyId(String propertyId);
+    ResponseEntity<List<ApplicationResponse>> getApplicationsByPropertyId(String propertyId);
 
     ResponseEntity<?> updateApplicationStatus(String applicationId, ApplicationStatus status,TransactionRequest transactionRequest);
 
