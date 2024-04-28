@@ -23,7 +23,7 @@ const getListedProperties = () => {
 };
 
 const applyForOwner = () => {
-  return httpClient.post("/user/apply");
+  return httpClient.patch("/user/applyForOwner");
 };
 
 const getUsers = () => {
@@ -49,18 +49,26 @@ const getApplicationsByPropertyId = (propertyId) => {
 
 const acceptOrRejectApplicationByOwner = (applicationId, status) => {
   return httpClient.patch(`/applications/${applicationId}/${status}`);
-}
+};
 
-const acceptOrRejectApplicationByUser = (applicationId, status,transactionRequest) => {
-  return httpClient.patch(`/applications/${applicationId}/${status}`);
-
-}
+const acceptOrRejectApplicationByUser = (
+  applicationId,
+  status,
+  transactionRequest
+) => {
+  return httpClient.patch(`/applications/${applicationId}/${status}`,transactionRequest);
+};
 
 const viewOrDownloadAttachment = (type, id, isView) => {
-    return httpClient.get(`/file/${type}/${id}/view=${isView}`);
- 
-}
+  console.log("View or Download Attachment::", type, id, isView);
+  const url = `${httpClient.defaults.baseURL}/file/${type}/${id}?view=${isView}`;
+  console.log("URL::", url);
+  return url;
+};
 
+const updateUser = (data) => {
+  return httpClient.patch("/user/", data);
+};
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -77,5 +85,6 @@ export default {
   getApplicationsByPropertyId,
   acceptOrRejectApplicationByOwner,
   acceptOrRejectApplicationByUser,
-  viewOrDownloadAttachment
+  viewOrDownloadAttachment,
+  updateUser
 };

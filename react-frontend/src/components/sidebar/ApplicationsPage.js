@@ -12,12 +12,13 @@ import {
 } from "@material-ui/core";
 import Card from "../card/Card";
 import { Typography } from "@mui/material";
+import { set } from "mongoose";
 
 function ApplicationsPage() {
   const [selectedProperty, setSelectedProperty] = React.useState({});
   const [open, setOpen] = React.useState(false);
   const [transactionRequest, setTransactionRequest] = React.useState({
-    propertyId: selectedProperty.id,
+    propertyId: "",
     cardNumber: "",
     cardHolderName: "",
     expiryDate: "",
@@ -27,7 +28,12 @@ function ApplicationsPage() {
   });
   const handleClickOpen = (property) => {
     setOpen(true);
+    console.log("Property::::::::::", property);  
     setSelectedProperty(property);
+    setTransactionRequest((prevState) => ({
+      ...prevState,
+      propertyId: property.property.id,
+    }));
   };
   const handleClose = () => {
     setOpen(false);
@@ -144,6 +150,14 @@ function ApplicationsPage() {
                       {property.status === "MOVED_IN" && (
                         <b>
                           <p>STATUS: YOU ARE ALREADY IN THIS PROPERTY</p>
+                        </b>
+                      )}
+                      {property.status === "PROCESS_COMPLETED" && (
+                        <b><p>This Property is Already Occupied</p></b>
+                      )}
+                      {property.status === "REJECTED" && (
+                        <b>
+                          <p>STATUS: {property.status}</p>
                         </b>
                       )}
                       {property.status === "APPROVED" && (

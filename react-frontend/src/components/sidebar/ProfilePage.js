@@ -317,7 +317,7 @@ function ProfilePage() {
 
             <p>Email:</p>
             <TextField
-              value={userDetails.email}
+              value={updateProfile.email}
               fullWidth
               style={{
                 margin: "5px 0",
@@ -332,7 +332,7 @@ function ProfilePage() {
             <Button
               variant="contained"
               color="secondary"
-              onClick={handleSubmit}
+              onClick={() => window.location.reload()}
             >
               Cancel
             </Button>
@@ -340,6 +340,7 @@ function ProfilePage() {
               variant="contained"
               color="primary"
               style={{ marginLeft: "10px" }}
+              onClick={handleSubmit}
             >
               Save Changes
             </Button>
