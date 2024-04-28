@@ -58,6 +58,7 @@ public class FileController {
 
 
     public byte[] convertBase64StringToByteArray(String base64String) {
+        base64String = base64String.split(",")[1];
         return Base64.getDecoder().decode(base64String);
     }
 
