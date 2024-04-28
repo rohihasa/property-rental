@@ -77,12 +77,19 @@ public class UserServiceImpl implements UserService {
             List<Application> application = applicationRepository.findByUserId(commonUtils.getUserId());
             User user= userRepository.findById(id).get();
 
-            if(application!=null &&  !application.isEmpty()){
-                Application currentProperty = application.stream().filter(_application->_application.getStatus().equals(ApplicationStatus.MOVED_IN)).findFirst().get();
-                Property property = propertyRepository.findById(currentProperty.getPropertyId().toString()).get();
-                user.setCurrentProperty(property);
-            }
+            Optional<Application> currentPropertyOpt = application.stream()
+                    .filter(_application -> _application.getStatus().equals(ApplicationStatus.MOVED_IN))
+                    .findFirst();
 
+            if (currentPropertyOpt.isPresent()) {
+                Application currentProperty = currentPropertyOpt.get();
+                Optional<Property> propertyOpt = propertyRepository.findById(currentProperty.getPropertyId().toString());
+
+                if (propertyOpt.isPresent()) {
+                    Property property = propertyOpt.get();
+                    user.setCurrentProperty(property);
+                }
+            }
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);

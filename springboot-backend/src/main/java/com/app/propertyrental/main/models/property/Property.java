@@ -46,4 +46,5 @@ public class Property {
     private Boolean verificationStatus;
 
     private boolean saved;
+    private boolean applied;
 }

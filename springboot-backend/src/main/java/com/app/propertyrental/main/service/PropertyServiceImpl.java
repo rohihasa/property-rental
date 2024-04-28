@@ -204,10 +204,17 @@ public class PropertyServiceImpl implements PropertyService {
             if(user.getSavedProperties().contains(propertyId)){
                 property.setSaved(true);
             }
+
+            property.setApplied(hasUserAppliedForProperty(UserId, propertyId));
             return ResponseEntity.ok(property);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    public boolean hasUserAppliedForProperty(String userId, String propertyId) {
+        List<Application> applications = applicationRepository.findByPropertyId(new ObjectId(propertyId));
+        return applications.stream().anyMatch(application -> application.getUserId().toString().equals(userId));
     }
 
     @Override
