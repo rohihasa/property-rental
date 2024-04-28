@@ -382,7 +382,11 @@ public class PropertyServiceImpl implements PropertyService {
     public ResponseEntity<List<Property>> getPendingProperties() {
         try {
           List<Property> properties = propertyRepository.findAll();
-            return ResponseEntity.ok(properties.stream().filter(property -> !property.getVerificationStatus()).collect(Collectors.toList()));
+          properties= properties.stream().filter(property -> !property.getVerificationStatus()).collect(Collectors.toList());
+          if(properties.isEmpty()){
+              return ResponseEntity.ok(List.of());
+          }
+            return ResponseEntity.ok(properties);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
