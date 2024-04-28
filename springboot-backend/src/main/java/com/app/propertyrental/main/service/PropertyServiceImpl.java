@@ -78,7 +78,10 @@ public class PropertyServiceImpl implements PropertyService {
             if (location != null && !location.isEmpty()) {
                 properties = properties.stream().filter(property -> property.getAddress().getCity().equals(location)).collect(Collectors.toList());
             }
-            return ResponseEntity.ok(properties);
+            return ResponseEntity.ok(properties.stream()
+                    .filter(Property::getVerificationStatus)
+                    .filter(Property::getIsAvailable)
+                    .collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -201,7 +204,7 @@ public class PropertyServiceImpl implements PropertyService {
             String UserId = commonUtils.getUserId().toString();
             User user = userRepository.findById(UserId).get();
             Property property = propertyRepository.findById(propertyId).get();
-            if(user.getSavedProperties().contains(propertyId)){
+            if (user.getSavedProperties().contains(propertyId)) {
                 property.setSaved(true);
             }
 
@@ -252,7 +255,6 @@ public class PropertyServiceImpl implements PropertyService {
             ObjectId userId = commonUtils.getUserId();
             Property property = propertyRepository.findById(applicationRequest.getPropertyId()).get();
             Application application = new Application();
-
 
 
             User user = userRepository.findById(userId.toString()).get();
@@ -346,7 +348,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public ResponseEntity<String> reviewProperty(ReviewRequest reviewRequest) {
-        try{
+        try {
             Review review = new Review();
             review.setUserId(commonUtils.getUserId().toString());
             review.setPropertyId(reviewRequest.getPropertyId());
@@ -354,17 +356,17 @@ public class PropertyServiceImpl implements PropertyService {
             review.setReview(reviewRequest.getReview());
             reviewRepository.save(review);
             return ResponseEntity.ok("Review submitted successfully");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
         }
     }
 
     @Override
     public ResponseEntity<List<Review>> getReviews(String propertyId) {
-       try{
-              return ResponseEntity.ok(reviewRepository.findByPropertyId(propertyId));
-       }catch (Exception e){
-           return ResponseEntity.badRequest().body(null);
-       }
+        try {
+            return ResponseEntity.ok(reviewRepository.findByPropertyId(propertyId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }

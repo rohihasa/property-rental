@@ -7,6 +7,8 @@ public enum ApplicationStatus {
     REJECTED,
     CANCELLED,
 
+    PROCESS_COMPLETED
+
 
 
 

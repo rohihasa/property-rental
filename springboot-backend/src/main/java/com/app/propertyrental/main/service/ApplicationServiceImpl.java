@@ -15,6 +15,7 @@ import com.app.propertyrental.main.repository.ContractRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 //import com.app.propertyrental.main.repository.TransactionRepository;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +79,12 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ResponseEntity<List<ApplicationResponse>> getApplicationsByPropertyId(String propertyId) {
         try {
             List<Application> applications = applicationRepository.findByPropertyId(new ObjectId(propertyId));
+            boolean isAnyApplicationMovedIn = applications.stream()
+                    .anyMatch(application -> application.getStatus().equals(ApplicationStatus.MOVED_IN));
+
+            if (isAnyApplicationMovedIn) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
             List<ApplicationResponse> applicationResponses = getApplicationResponses(applications);
             return ResponseEntity.ok(applicationResponses);
         } catch (Exception e) {
@@ -95,6 +102,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
                 property.setIsAvailable(false);
 //                createTransaction(transactionRequest);
+                changeOtherPropertyApplicationsToClose(property,applicationId);
                 createContract(transactionRequest, application, property);
                 propertyRepository.save(property);
             } else if (status.equals(ApplicationStatus.CANCELLED)) {
@@ -107,6 +115,16 @@ public class ApplicationServiceImpl implements ApplicationService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    private void changeOtherPropertyApplicationsToClose(Property property, String applicationId) {
+        List<Application> applications = applicationRepository.findByPropertyId(new ObjectId(property.getId()));
+        applications.stream()
+                .filter(application -> !application.getId().equals(applicationId))
+                .forEach(application -> {
+                    application.setStatus(ApplicationStatus.PROCESS_COMPLETED);
+                    applicationRepository.save(application);
+                });
     }
 
     @Override
