@@ -21,6 +21,7 @@ public class Contract {
     private ObjectId propertyId;
     private ObjectId userId;
     private ObjectId applicationId;
+    private ObjectId paymentId;
     private Date createdAt;
     private Date updatedAt;
     private Date moveInDate;

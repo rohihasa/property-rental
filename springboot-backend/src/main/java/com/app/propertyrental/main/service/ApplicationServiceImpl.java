@@ -3,15 +3,13 @@ package com.app.propertyrental.main.service;
 
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
-import com.app.propertyrental.main.models.Application;
-import com.app.propertyrental.main.models.ApplicationStatus;
-import com.app.propertyrental.main.models.Contract;
-import com.app.propertyrental.main.models.Transaction;
+import com.app.propertyrental.main.models.*;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
 import com.app.propertyrental.main.payload.response.ApplicationResponse;
 import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.ContractRepository;
+import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 //import com.app.propertyrental.main.repository.TransactionRepository;
 import org.bson.types.ObjectId;
@@ -29,6 +27,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private final CommonUtils commonUtils;
 
+    private final PaymentRepository paymentRepository;
+
     private final ContractRepository contractRepository;
 //    private final TransactionRepository transactionRepository;
 
@@ -36,13 +36,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     private  final UserRepository userRepository;
 
     public ApplicationServiceImpl(ApplicationRepository applicationRepository,
-                                  CommonUtils commonUtils,
+                                  CommonUtils commonUtils, PaymentRepository paymentRepository,
                                   ContractRepository contractRepository,
 //                                  TransactionRepository transactionRepository,
                                   PropertyRepository propertyRepository, UserRepository userRepository) {
 
         this.applicationRepository = applicationRepository;
         this.commonUtils = commonUtils;
+        this.paymentRepository = paymentRepository;
         this.contractRepository = contractRepository;
 //        this.transactionRepository = transactionRepository;
         this.propertyRepository = propertyRepository;
@@ -102,8 +103,11 @@ public class ApplicationServiceImpl implements ApplicationService {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
                 property.setIsAvailable(false);
 //                createTransaction(transactionRequest);
-                changeOtherPropertyApplicationsToClose(property,applicationId);
+                PaymentMethods paymentMethod = createPaymentMethod(transactionRequest);
+                transactionRequest.setPaymentMethod(paymentMethod.getId());
                 createContract(transactionRequest, application, property);
+                changeOtherPropertyApplicationsToClose(property,applicationId);
+
                 propertyRepository.save(property);
             } else if (status.equals(ApplicationStatus.CANCELLED)) {
                 applicationRepository.delete(application);
@@ -115,6 +119,21 @@ public class ApplicationServiceImpl implements ApplicationService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    private PaymentMethods createPaymentMethod(TransactionRequest transactionRequest) {
+        PaymentMethods paymentMethod = new PaymentMethods();
+        paymentMethod.setCustomerId(commonUtils.getUserId());
+        paymentMethod.setName(transactionRequest.getName());
+        paymentMethod.setType(transactionRequest.getType());
+        paymentMethod.setCardNumber(transactionRequest.getCardNumber());
+        paymentMethod.setExpiryDate(transactionRequest.getExpiryDate());
+        paymentMethod.setCvv(transactionRequest.getCvv());
+        paymentMethod.setCardHolderName(transactionRequest.getCardHolderName());
+        paymentMethod.setActive(true);
+        paymentMethod.setCreatedAt(commonUtils.getCurrentDate());
+        paymentMethod.setUpdatedAt(commonUtils.getCurrentDate());
+        return paymentRepository.save(paymentMethod);
     }
 
     private void changeOtherPropertyApplicationsToClose(Property property, String applicationId) {
