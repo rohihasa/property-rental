@@ -1,8 +1,23 @@
 import { Link } from "react-router-dom";
 import "./card.css";
+import { useState } from "react";
+import PropertyService from "../../services/PropertyService";
 
 function Card({ item }) {
     console.log("Item::", item);
+    const [saved, setSaved] = useState(item.saved);
+
+    const handleSave = (propertyId) => {
+      PropertyService.saveOrUnsaveProperty(propertyId)
+        .then((response) => {
+          setSaved(!saved);
+          console.log("Property saved:", response);
+        })
+        .catch((error) => {
+          // Handle the error as needed.
+          console.error("Error saving property:", error);
+        });
+    };
   return (
     <div className="card">
       <Link to={`/${item.id}`} className="imageContainer">
@@ -14,7 +29,7 @@ function Card({ item }) {
         </h2>
         <p className="address">
           <img src="/pin.png" alt="" />
-          <span>{item.address.address}</span>
+          <span>{item.address.city}</span>
         </p>
         <p className="price">$ {item.price}</p>
         <div className="bottom">
@@ -30,10 +45,8 @@ function Card({ item }) {
           </div>
           <div className="icons">
             <div className="icon">
-              <img src="/save.png" alt="" />
-            </div>
-            <div className="icon">
-              <img src="/chat.png" alt="" />
+              <img onClick={()=>handleSave(item.id)} src="/save.png" alt="" />
+              <caption>{saved ? "Unsave " : "Save"}</caption>
             </div>
           </div>
         </div>

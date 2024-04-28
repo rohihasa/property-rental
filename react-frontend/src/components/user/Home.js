@@ -6,9 +6,10 @@ function Home() {
     <div className="homePage">
       <div className="textContainer">
         <div className="wrapper">
-          <h1 className="title">Find Real Estate & Get Your Dream Place</h1>
+          <h1 className="title">RENT-IT ,Find the perfect properties for rentals</h1>
           <p>
-            Description of the website. Description of the website. Description
+            Find the perfect properties for rentals in your city. We have
+            thousands of properties available for rent.
           </p>
           <SearchBar />
         </div>

@@ -44,11 +44,6 @@ function Properties() {
       <div className="listContainer">
       <Navbar/>
         <div className="wrapper">
-          <Filter
-            selectedLocation={selectedLocation}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-          />
           {data.length !== 0 &&
             data.map((item) => <Card key={item.id} item={item} />)}
         </div>

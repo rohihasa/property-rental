@@ -20,6 +20,7 @@ import {
   Button,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import { set } from "firebase/database";
 
 function PropertyView() {
   const { propertyId } = useParams();
@@ -60,11 +61,12 @@ function PropertyView() {
       .then((response) => {
         setSinglePostData(response.data);
         setSaved(response.data.saved);
+        setIsApplied(response.data.applied);
         console.log("Property response::", response.data);
       })
       .catch((error) => {
         console.log(error);
-      }); 
+      });
   }, [saved, propertyId, userId]);
   useEffect(() => {
     console.log("SinglePostData::", singlePostData);
@@ -113,42 +115,37 @@ function PropertyView() {
 
   const handleUploadCreditReport = (event) => {
     console.log("File:::", event.target.files[0]);
-    const formData = new FormData();
-    formData.append("file", event.target.files[0]);
-    console.log("formData", formData.get("file"));
     setLoading(true);
-    FileService.uploadFile(formData)
-      .then((response) => {
-        console.log("File uploaded successfully:", response.data.id);
-        setFiles({ ...files, creditReport: response.data.id });
-        setDisableCreditReport(true);
-      })
-      .catch((error) => {
-        console.error("Error uploading file:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading
-      });
+    const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    setFiles(prevState => ({
+      ...prevState,
+      creditReport: reader.result
+    }));
+  };
+  reader.readAsDataURL(file);
+  setDisableCreditReport(true);
+    
   };
 
   const handleUploadIdProof = (event) => {
     console.log("File:::", event.target.files[0]);
-    const formData = new FormData();
-    formData.append("file", event.target.files[0]);
-    console.log("formData", formData.get("file"));
     setLoading(true);
-    FileService.uploadFile(formData)
-      .then((response) => {
-        console.log("File uploaded successfully:", response.data.id);
-        setFiles({ ...files, idProof: response.data.id });
-        setDisableIdProof(true);
-      })
-      .catch((error) => {
-        console.error("Error uploading file:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading
-      });
+    const file = event.target.files[0];
+    const reader = new FileReader();
+  
+    reader.onloadend = () => {
+      setFiles(prevState => ({
+        ...prevState,
+        idProof: reader.result
+      }));
+    };
+    reader.readAsDataURL(file);
+    setLoading(false);
+    setDisableIdProof(true);
+
   };
 
   const handleSend = () => {
@@ -192,7 +189,7 @@ function PropertyView() {
                 <div className="address">
                   <img src="/pin.png" alt="" />
                   <span>
-                    {singlePostData && singlePostData.address.address}
+                    {singlePostData && singlePostData.address.city}
                   </span>
                 </div>
                 <div className="price">
@@ -202,10 +199,7 @@ function PropertyView() {
               <div className="user">
                 {userData && (
                   <>
-                    <img
-                      src={`${userData.profileImage}`}
-                      alt=""
-                    />
+                    <img src={`${userData.profileImage}`} alt="" />
                     <span>{userData.username}</span>
                   </>
                 )}
@@ -289,18 +283,16 @@ function PropertyView() {
               Send a Message
             </button>
             <button onClick={handleSaveProperty}>
-              {!saved&&<img src="/save.png" alt="" />}
-             {saved?"Unsave ": "Save Property"}
+              {!saved && <img src="/save.png" alt="" />}
+              {saved ? "Unsave " : "Save Property"}
             </button>
 
-            <button 
-               disabled={isApplied}
-            onClick={handleOpen}>
-           
+            <button disabled={isApplied} onClick={handleOpen}>
               <img src="/restaurant.png" alt="" />
               {isApplied ? "Applied" : "Apply"}
             </button>
             <Dialog
+              style={{ width: "600px" }}
               open={open}
               onClose={() => setOpen(false)}
               aria-labelledby="form-dialog-title"
@@ -346,7 +338,10 @@ function PropertyView() {
                   Email: {userData && userData.email}
                 </Typography>
                 <Typography variant="subtitle1">
-                  Phone: {userData && userData.phone}
+                  Phone:{" "}
+                  {userData &&
+                    userData.contactDetails &&
+                    userData.contactDetails.phoneNumber}
                 </Typography>
                 <br></br>
                 <Typography style={{ margin: "5px" }} variant="body2">

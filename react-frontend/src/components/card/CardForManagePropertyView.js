@@ -21,6 +21,7 @@ function CardForManagePropertyView({ item }) {
           <span>{item.address.city}</span>
         </p>
         <p className="price">$ {item.price}</p>
+        <p>Total Applications: 1</p>
       </div>
     </div>
   );

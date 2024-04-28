@@ -27,7 +27,7 @@ function SavedPage() {
       {data&&data.map((item) => (
         <Card key={item.id} item={item} />
       ))}
-      {!data&&<h1>No Saved Properties</h1>}
+      {(!data||data.length===0)&&<h1>No Saved Properties</h1>}
     </div>
   );
 }
