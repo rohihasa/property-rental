@@ -211,7 +211,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applications.stream()
                 .map(application -> {
                     ApplicationResponse applicationResponse = new ApplicationResponse();
-                    applicationResponse.setUserId(userRepository.findById(application.getUserId().toString()).get());
+                    applicationResponse.setId(application.getId());
+                    applicationResponse.setUser(userRepository.findById(application.getUserId().toString()).get());
                     applicationResponse.setProperty(propertyRepository.findById(application.getPropertyId().toString()).get());
                     applicationResponse.setStatus(application.getStatus());
                     applicationResponse.setCreatedAt(application.getCreatedAt());

@@ -14,7 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ApplicationResponse {
-    private User userId;
+    private String id;
+    private User user;
     private Property property;
     private ApplicationStatus status;
     private Date createdAt;
