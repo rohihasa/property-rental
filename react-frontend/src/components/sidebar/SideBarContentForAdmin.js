@@ -18,9 +18,6 @@ function SideBarContent({selectedMenu}) {
         case 2:
             Component = PropertiesPageForAdmin;
             break;
-        case 3:
-            Component = ApplicationsPageForAdmin;
-            break;
         default:
             Component = LogoutForAdmin;
     }

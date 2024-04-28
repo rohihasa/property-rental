@@ -27,7 +27,7 @@ const applyForOwner = () => {
 };
 
 const getUsers = () => {
-  return httpClient.get("/user");
+  return httpClient.get("/user/adminDashboard");
 };
 
 const getTransactions = () => {
@@ -70,6 +70,22 @@ const updateUser = (data) => {
   return httpClient.patch("/user/", data);
 };
 
+const getPendingOwners = () => {
+  return httpClient.get("/user/pending");
+};
+
+const approveOrRejectOwner = (action, userId) => {
+  return httpClient.patch(`/user/approveUser/${userId}/${action}`);
+}
+
+const getAllPendingProperties = () => {
+  return httpClient.get("/property/pending");
+};
+
+const approveOrRejectProperty = (propertyId, action) => {
+  return httpClient.patch(`/property/${propertyId}/status/${action}`);
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   userLogin,
@@ -86,5 +102,9 @@ export default {
   acceptOrRejectApplicationByOwner,
   acceptOrRejectApplicationByUser,
   viewOrDownloadAttachment,
-  updateUser
+  updateUser,
+  getPendingOwners,
+  approveOrRejectOwner,
+  getAllPendingProperties,
+  approveOrRejectProperty
 };

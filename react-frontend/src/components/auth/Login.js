@@ -74,7 +74,7 @@ function Login() {
         } else if (role === "ROLE_OWNER") {
           window.location = "user/home";
         } else if (role === "ROLE_ADMIN") {
-          window.location = "/user/home/test";
+          window.location = "/admin";
         } else {
           console.error("Unknown role received from API:", role);
         }
