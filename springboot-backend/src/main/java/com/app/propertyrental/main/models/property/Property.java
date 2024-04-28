@@ -45,5 +45,5 @@ public class Property {
     private Integer bedrooms;
     private Boolean verificationStatus;
 
-
+    private boolean saved;
 }

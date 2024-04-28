@@ -5,10 +5,13 @@ import com.app.propertyrental.common.models.User;
 //import com.app.propertyrental.common.repository.RoleRepository;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
+import com.app.propertyrental.main.models.Application;
+import com.app.propertyrental.main.models.ApplicationStatus;
 import com.app.propertyrental.main.models.Notification;
 import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.response.ReportResponse;
+import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.bson.types.ObjectId;
@@ -27,6 +30,8 @@ public class UserServiceImpl implements UserService {
 
     private PropertyRepository propertyRepository;
 
+    private final ApplicationRepository applicationRepository;
+
 //    private NotificationRepository notificationRepository;
 
 //    private RoleRepository roleRepository;
@@ -35,11 +40,12 @@ public class UserServiceImpl implements UserService {
 
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, ApplicationRepository applicationRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
 //        this.roleRepository = roleRepository;
         this.propertyRepository = propertyRepository;
         this.paymentRepository = paymentRepository;
+        this.applicationRepository = applicationRepository;
 //        this.notificationRepository = notificationRepository;
         this.commonUtils = commonUtils;
     }
@@ -48,6 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<String> getProfilePic() {
         try {
+
             return ResponseEntity.ok(userRepository.findById(commonUtils.getUserId().toString()).get().getProfileImage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
@@ -67,7 +74,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<User> getUserById(String id) {
         try {
-            return ResponseEntity.ok(userRepository.findById(id).get());
+            List<Application> application = applicationRepository.findByUserId(commonUtils.getUserId());
+            User user= userRepository.findById(id).get();
+
+            if(application!=null &&  !application.isEmpty()){
+                Application currentProperty = application.stream().filter(_application->_application.getStatus().equals(ApplicationStatus.MOVED_IN)).findFirst().get();
+                Property property = propertyRepository.findById(currentProperty.getPropertyId().toString()).get();
+                user.setCurrentProperty(property);
+            }
+
+            return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }

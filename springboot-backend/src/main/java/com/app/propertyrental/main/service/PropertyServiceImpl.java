@@ -198,7 +198,13 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public ResponseEntity<Property> getPropertyById(String propertyId) {
         try {
-            return ResponseEntity.ok(propertyRepository.findById(propertyId).get());
+            String UserId = commonUtils.getUserId().toString();
+            User user = userRepository.findById(UserId).get();
+            Property property = propertyRepository.findById(propertyId).get();
+            if(user.getSavedProperties().contains(propertyId)){
+                property.setSaved(true);
+            }
+            return ResponseEntity.ok(property);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }

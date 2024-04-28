@@ -1,6 +1,7 @@
 package com.app.propertyrental.common.models;
 
 import com.app.propertyrental.main.models.Notification;
+import com.app.propertyrental.main.models.property.Property;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -57,6 +58,8 @@ public class User {
   private String identityProof;
 
   private String creditReport;
+
+  private Property currentProperty;
 
     public User(String username, String email, String password) {
         this.username = username;
