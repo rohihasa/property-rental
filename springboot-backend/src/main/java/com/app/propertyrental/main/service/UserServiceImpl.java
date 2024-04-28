@@ -5,13 +5,12 @@ import com.app.propertyrental.common.models.User;
 //import com.app.propertyrental.common.repository.RoleRepository;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
-import com.app.propertyrental.main.models.Application;
-import com.app.propertyrental.main.models.ApplicationStatus;
-import com.app.propertyrental.main.models.Notification;
-import com.app.propertyrental.main.models.PaymentMethods;
+import com.app.propertyrental.main.models.*;
 import com.app.propertyrental.main.models.property.Property;
+import com.app.propertyrental.main.payload.response.AdminDashboardResponse;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.repository.ApplicationRepository;
+import com.app.propertyrental.main.repository.ContractRepository;
 import com.app.propertyrental.main.repository.PaymentRepository;
 import com.app.propertyrental.main.repository.PropertyRepository;
 import org.bson.types.ObjectId;
@@ -32,6 +31,8 @@ public class UserServiceImpl implements UserService {
 
     private final ApplicationRepository applicationRepository;
 
+    private final ContractRepository contractRepository;
+
 //    private NotificationRepository notificationRepository;
 
 //    private RoleRepository roleRepository;
@@ -40,12 +41,13 @@ public class UserServiceImpl implements UserService {
 
     private CommonUtils commonUtils;
 
-    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, ApplicationRepository applicationRepository, CommonUtils commonUtils) {
+    public UserServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository, PropertyRepository propertyRepository, ApplicationRepository applicationRepository, ContractRepository contractRepository, CommonUtils commonUtils) {
         this.userRepository = userRepository;
 //        this.roleRepository = roleRepository;
         this.propertyRepository = propertyRepository;
         this.paymentRepository = paymentRepository;
         this.applicationRepository = applicationRepository;
+        this.contractRepository = contractRepository;
 //        this.notificationRepository = notificationRepository;
         this.commonUtils = commonUtils;
     }
@@ -266,6 +268,30 @@ public class UserServiceImpl implements UserService {
             user.setCreditReport(reportResponse.getCreditReport());
             userRepository.save(user);
             return ResponseEntity.ok(reportResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<AdminDashboardResponse> getAdminDashboard() {
+        try {
+            AdminDashboardResponse adminDashboardResponse = new AdminDashboardResponse();
+
+            List<Contract> contracts = contractRepository.findAll();
+            double adminCommision = contracts.stream()
+                    .flatMap(contract -> contract.getTransactions().stream())
+                    .mapToDouble(Transaction::getAdminCommission)
+                    .sum();
+            adminDashboardResponse.setAdminCommission(adminCommision);
+            List<User> allUsers = userRepository.findAll();
+            allUsers = allUsers.stream()
+                    .filter(user -> !user.getRoles().contains(ERole.ROLE_ADMIN))
+                    .collect(Collectors.toList());
+            adminDashboardResponse.setAllUsers(allUsers);
+            adminDashboardResponse.setTotalUsers(allUsers.size());
+
+            return ResponseEntity.ok(adminDashboardResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }

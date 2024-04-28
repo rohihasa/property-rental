@@ -4,6 +4,7 @@ import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.main.models.Notification;
 import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
+import com.app.propertyrental.main.payload.response.AdminDashboardResponse;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -39,4 +40,6 @@ public interface UserService {
 
 
     ResponseEntity<ReportResponse> patchReports(ReportResponse reportResponse);
+
+    ResponseEntity<AdminDashboardResponse> getAdminDashboard();
 }

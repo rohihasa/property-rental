@@ -4,6 +4,7 @@ import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.main.models.Notification;
 import com.app.propertyrental.main.models.PaymentMethods;
 import com.app.propertyrental.main.models.property.Property;
+import com.app.propertyrental.main.payload.response.AdminDashboardResponse;
 import com.app.propertyrental.main.payload.response.ReportResponse;
 import com.app.propertyrental.main.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +98,13 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> approveUser(@PathVariable("userId") String userId,@PathVariable("status") String status) {
         return userService.approveUser(userId, status);
+    }
+
+
+    @GetMapping("/adminDashboard")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AdminDashboardResponse> getAdminDashboard() {
+        return userService.getAdminDashboard();
     }
 
 
