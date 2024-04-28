@@ -202,11 +202,14 @@ public class UserServiceImpl implements UserService {
             List<String> savedProperties = user.getSavedProperties();
             if (savedProperties.contains(property.getId())) {
                 user.getSavedProperties().remove(property.getId());
+                userRepository.save(user);
+                return ResponseEntity.ok("Property unsaved");
             } else {
                 user.getSavedProperties().add(property.getId());
+                userRepository.save(user);
+                return ResponseEntity.ok("Property Saved");
             }
-            userRepository.save(user);
-            return ResponseEntity.ok("Property Saved");
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
         }

@@ -69,6 +69,7 @@ public class PropertyServiceImpl implements PropertyService {
     public ResponseEntity<List<Property>> getAllProperties(double minPrice, double maxPrice, String location) {
         try {
             List<Property> properties = propertyRepository.findAll();
+            User user = userRepository.findById(commonUtils.getUserId().toString()).get();
             if (minPrice != 0) {
                 properties = properties.stream().filter(property -> property.getPrice() >= minPrice).collect(Collectors.toList());
             }
@@ -78,6 +79,13 @@ public class PropertyServiceImpl implements PropertyService {
             if (location != null && !location.isEmpty()) {
                 properties = properties.stream().filter(property -> property.getAddress().getCity().equals(location)).collect(Collectors.toList());
             }
+            properties.stream()
+                    .forEach(property -> {
+                        if(user.getSavedProperties().contains(property.getId())){
+                            property.setSaved(true);
+                        }
+                    });
+
             return ResponseEntity.ok(properties.stream()
                     .filter(Property::getVerificationStatus)
                     .filter(Property::getIsAvailable)
