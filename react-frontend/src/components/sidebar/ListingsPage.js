@@ -159,8 +159,8 @@ function ListingsPage() {
   useEffect(() => {
     UserService.getUserById(userDetails.id)
       .then((response) => {
-        console.log(response.data);
-        setRole(response.data.role);
+        console.log("USERrrrrrr",response.data);
+        setRole(response.data.roles[0]);
         setVerified(response.data.verified);
       })
       .catch((error) => {
@@ -183,18 +183,18 @@ function ListingsPage() {
   return (
     <div>
       {loading && <CircularProgress />}
-      {/* {data &&
+      {role==="ROLE_OWNER"&&!verified&&<h1>Verification By Admin is In Progress</h1>}
+      {role==="ROLE_USER" && <h1>Apply for Owner to list your properties</h1>}
+      {role==="ROLE_OWNER"&&verified&&data &&
         data.map((item) => (
           <CardForManageProperties key={item.id} item={item} />
-        ))} */}
+        ))}
       {!data && <h1>No Listed Properties</h1>}
       {role === "ROLE_OWNER" && verified && (
         <Button onClick={handleClickOpen}>Post New Property</Button>
       )}
-      {role === "ROLE_USER"}
-      {/* {role === "ROLE_USER" && <Button>Apply</Button>} */}
-      <Button onClick={handleApplyToOwer}>Apply for Owner</Button>
-      <Button onClick={handleClickOpen}>Post New Property</Button>
+       {role==="ROLE_USER" && <Button onClick={handleApplyToOwer}>Apply for Owner</Button>} 
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Post New Property</DialogTitle>
         <DialogContent>

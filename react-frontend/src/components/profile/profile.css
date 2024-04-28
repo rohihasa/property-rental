@@ -17,11 +17,11 @@ body {
 
 .sidebar {
   /* Your sidebar styles */
-  background-color: #fcf5f3;
+  background-color: #ffffff;
 }
 
 .nav-bar {
-  background-color: #fcf5f3;
+  background-color: #ffffff;
   /* Your navbar styles */
   z-index: 2; /* Set z-index to a higher value */
 }

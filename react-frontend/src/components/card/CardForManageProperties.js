@@ -2,10 +2,13 @@ import { Link } from "react-router-dom";
 import "./card.css";
 
 function CardForManageProperties({ item }) {
-    console.log("Item::", item);
+  if (!item) {
+    return null; // or some loading indicator
+  }
+    console.log("Item::::::::::::::::::::", item);
   return (
     <div className="card">
-      <Link to={`/${item.id}`} className="imageContainer">
+      <Link to={``} className="imageContainer">
         <img src={`${item.images[0]}`} alt="" />
       </Link>
       <div className="textContainer">
@@ -14,7 +17,7 @@ function CardForManageProperties({ item }) {
         </h2>
         <p className="address">
           <img src="/pin.png" alt="" />
-          <span>{item.address.address}</span>
+          <span>{item.address.location}</span>
         </p>
         <p className="price">$ {item.price}</p>
         <div className="bottom">

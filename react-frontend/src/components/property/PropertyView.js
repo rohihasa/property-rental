@@ -34,6 +34,7 @@ function PropertyView() {
   const [open, setOpen] = useState(false);
   const [disableIdProof, setDisableIdProof] = useState(false);
   const [disableCreditReport, setDisableCreditReport] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [files, setFiles] = useState({
     creditReport: "",
     idProof: "",
@@ -58,12 +59,13 @@ function PropertyView() {
     PropertyService.getPropertyById(propertyId)
       .then((response) => {
         setSinglePostData(response.data);
+        setSaved(response.data.saved);
         console.log("Property response::", response.data);
       })
       .catch((error) => {
         console.log(error);
-      });
-  }, []);
+      }); 
+  }, [saved, propertyId, userId]);
   useEffect(() => {
     console.log("SinglePostData::", singlePostData);
   }, [singlePostData]);
@@ -74,6 +76,7 @@ function PropertyView() {
   const handleSaveProperty = () => {
     PropertyService.saveOrUnsaveProperty(propertyId)
       .then((response) => {
+        setSaved(!saved);
         console.log("Property saved:", response);
       })
       .catch((error) => {
@@ -286,8 +289,8 @@ function PropertyView() {
               Send a Message
             </button>
             <button onClick={handleSaveProperty}>
-              <img src="/save.png" alt="" />
-              Save the Place
+              {!saved&&<img src="/save.png" alt="" />}
+             {saved?"Unsave ": "Save Property"}
             </button>
 
             <button 

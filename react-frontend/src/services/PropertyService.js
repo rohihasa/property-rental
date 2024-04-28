@@ -26,6 +26,7 @@ const applyForProperty = (applyRequest) => {
 };
 
 const postProperty = (property) => {
+  console.log("Property::In Request calls", property)
   return httpClient.post(`/property/`, property);
 };
 
