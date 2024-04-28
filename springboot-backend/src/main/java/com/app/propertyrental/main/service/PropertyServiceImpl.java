@@ -253,8 +253,14 @@ public class PropertyServiceImpl implements PropertyService {
             Property property = propertyRepository.findById(applicationRequest.getPropertyId()).get();
             Application application = new Application();
 
-            application.setUserId(userId);
 
+
+            User user = userRepository.findById(userId.toString()).get();
+            user.setCreditReport(applicationRequest.getCreditReport());
+            user.setIdentityProof(applicationRequest.getIdProof());
+            userRepository.save(user);
+
+            application.setUserId(userId);
             application.setPropertyId(new ObjectId(applicationRequest.getPropertyId()));
             application.setStatus(ApplicationStatus.PENDING);
             application.setMessage(applicationRequest.getMessage());
@@ -263,8 +269,6 @@ public class PropertyServiceImpl implements PropertyService {
             application.setMoveInDate(applicationRequest.getMoveInDate());
             application.setEmergencyContact(applicationRequest.getEmergencyContact());
             application.setEmploymentDetails(applicationRequest.getEmploymentDetails());
-            application.setCreditReport(applicationRequest.getCreditReport());
-            application.setIdProof(applicationRequest.getIdProof());
             applicationRepository.save(application);
 
             return ResponseEntity.ok("Application submitted successfully");
