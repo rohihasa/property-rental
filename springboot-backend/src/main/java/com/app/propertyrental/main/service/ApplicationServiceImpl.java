@@ -101,6 +101,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             Application application = applicationRepository.findById(applicationId).get();
             if (status.equals(ApplicationStatus.MOVED_IN)) {
                 Property property = propertyRepository.findById(application.getPropertyId().toString()).get();
+                if(!property.getIsAvailable()){
+                    throw new RuntimeException("property filled");
+                }
                 property.setIsAvailable(false);
 //                createTransaction(transactionRequest);
                 PaymentMethods paymentMethod = createPaymentMethod(transactionRequest);
