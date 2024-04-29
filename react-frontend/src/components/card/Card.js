@@ -31,6 +31,9 @@ function Card({ item }) {
           <img src="/pin.png" alt="" />
           <span>{item.address.city}</span>
         </p>
+        <p className="description">
+          <span>{item.description}</span>
+        </p>
         <p className="price">$ {item.price}</p>
         <div className="bottom">
           <div className="features">

@@ -21,7 +21,7 @@ function Map({items}){
     L.Marker.prototype.options.icon = DefaultIcon;
 
   return (
-    <MapContainer center={[47.60163380473738,-122.32918632111225]} zoom={7} scrollWheelZoom={false} className='map'>
+    <MapContainer center={[38.70368650165975,-93.22877944232364]} zoom={7} scrollWheelZoom={false} className='map'>
     <TileLayer
       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

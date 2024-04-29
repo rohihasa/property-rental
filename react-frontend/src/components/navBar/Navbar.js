@@ -35,15 +35,15 @@ function Navbar() {
     alert("Logged out successfully");
   };
 
-  useEffect(() => {
-    NotificationService.getNotifications()
-      .then((response) => {
-        setNotifications(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   NotificationService.getNotifications()
+  //     .then((response) => {
+  //       setNotifications(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("There was an error!", error);
+  //     });
+  // }, []);
 
   const handleTick = (notificationId) => {
     NotificationService.updateNotification(notificationId)
@@ -89,8 +89,8 @@ function Navbar() {
             src={`${userData.profileImage}`}
                alt=""
             />
-            <span>{userData && userData.username}</span>
-            <div>
+            <span style={{ paddingRight: '80px' }}>{userData && userData.username}</span>
+            {/* <div>
               <IconButton
                 color="inherit"
                 onClick={handleClickNotifications}
@@ -124,7 +124,7 @@ function Navbar() {
                   ))
                 )}
               </Menu>
-            </div>
+            </div> */}
           </div>
         ) : (
           <>

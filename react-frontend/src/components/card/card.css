@@ -1,4 +1,75 @@
 .card {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 4px; 
+}
+
+.imageContainer {
+  width: 30%; /* Adjust the width of the image container */
+  height: auto;
+  overflow: hidden;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: auto;
+}
+
+.textContainer {
+  padding: 10px 0;
+  width: 70%; /* Adjust the width of the text container */
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.address {
+  display: flex;
+  align-items: center;
+}
+
+.description {
+  margin-top: -10px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: -10px;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.features {
+  display: flex;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.icons {
+  display: flex;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}.card {
     display: flex;
     gap: 20px;
   }

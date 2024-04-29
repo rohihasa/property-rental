@@ -86,6 +86,15 @@ const approveOrRejectProperty = (propertyId, action) => {
   return httpClient.patch(`/property/${propertyId}/status/${action}`);
 }
 
+const reviewProperty = (review) => {
+  console.log("Review Property::", review);
+  return httpClient.post(`/property/review`, review);
+};
+
+const payRent = (transactionRequest) => {
+  return httpClient.patch(`/applications/transaction/create`);
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   userLogin,
@@ -106,5 +115,7 @@ export default {
   getPendingOwners,
   approveOrRejectOwner,
   getAllPendingProperties,
-  approveOrRejectProperty
+  approveOrRejectProperty,
+  reviewProperty,
+  payRent
 };

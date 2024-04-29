@@ -30,6 +30,8 @@ const postProperty = (property) => {
   return httpClient.post(`/property/`, property);
 };
 
+
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getPropertyLocations,
