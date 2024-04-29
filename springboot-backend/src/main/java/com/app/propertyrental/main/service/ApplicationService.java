@@ -26,7 +26,7 @@ public interface ApplicationService {
 //    ResponseEntity<Contract> createContract(String applicationId);
 
 
-    ResponseEntity<Transaction> createTransactionForProperty(TransactionRequest transactionRequest);
+    ResponseEntity<Transaction> createTransactionForCurrentProperty();
 
     ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String applicationId);
 

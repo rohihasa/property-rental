@@ -47,4 +47,5 @@ public class Property {
 
     private boolean saved;
     private boolean applied;
+    private List<Review> reviews;
 }

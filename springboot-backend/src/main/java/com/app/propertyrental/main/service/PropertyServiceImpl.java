@@ -215,7 +215,8 @@ public class PropertyServiceImpl implements PropertyService {
             if (user.getSavedProperties().contains(propertyId)) {
                 property.setSaved(true);
             }
-
+            List<Review> reviews = reviewRepository.findByPropertyId(propertyId);
+            property.setReviews(reviews);
             property.setApplied(hasUserAppliedForProperty(UserId, propertyId));
             return ResponseEntity.ok(property);
         } catch (Exception e) {

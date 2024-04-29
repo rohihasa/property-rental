@@ -108,7 +108,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 //                createTransaction(transactionRequest);
                 PaymentMethods paymentMethod = createPaymentMethod(transactionRequest);
                 transactionRequest.setPaymentMethod(paymentMethod.getId());
-                createContract(transactionRequest, application, property);
+                createContract(transactionRequest, application, property,paymentMethod);
                 changeOtherPropertyApplicationsToClose(property,applicationId);
 
                 propertyRepository.save(property);
@@ -150,18 +150,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public ResponseEntity<Transaction> createTransactionForProperty(TransactionRequest transactionRequest) {
+    public ResponseEntity<Transaction> createTransactionForCurrentProperty() {
         try {
+
+            Contract contract = contractRepository.findByUserId(commonUtils.getUserId()).get(0);
+            Transaction _transaction = contract.getTransactions().get(0);
             // Create a new transaction
             Transaction transaction = new Transaction();
-            transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
-            transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
-            transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
+            transaction.setPropertyId(_transaction.getPropertyId());
+            transaction.setPaymentMethod(contract.getPaymentId());
+            transaction.setPaymentAmount(_transaction.getPaymentAmount());
             transaction.setPaymentDate(commonUtils.getCurrentDate());
-            transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
+            transaction.setAdminCommission(_transaction.getPaymentAmount() * 0.05);
 
             // Find the contract associated with the property
-            Contract contract = contractRepository.findByPropertyId(transaction.getPropertyId()).get(0);
             // Add the transaction to the contract's transactions
             contract.getTransactions().add(transaction);
             // Save the updated contract
@@ -174,13 +176,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
 
-    public void createContract(TransactionRequest transactionRequest, Application application, Property property) {
+    public void createContract(TransactionRequest transactionRequest, Application application, Property property,PaymentMethods paymentMethod) {
         try {
             Contract contract = new Contract();
             contract.setApplicationId(new ObjectId(application.getId()));
             contract.setUserId(application.getUserId());
             contract.setPropertyId(application.getPropertyId());
             contract.setApplicationId(new ObjectId(application.getId()));
+            contract.setPaymentId(new ObjectId(paymentMethod.getId()));
             contract.setMoveInDate(application.getMoveInDate());
             contract.setCreatedAt(commonUtils.getCurrentDate());
             contract.setUpdatedAt(commonUtils.getCurrentDate());
@@ -189,9 +192,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             contract.setRentalAgreement(property.getPropertyDetails().getRentalAgreement());
 
             if (contract.getTransactions() == null) {
-                contract.setTransactions(List.of(createTransaction(transactionRequest)));
+                contract.setTransactions(List.of(createTransaction(transactionRequest,property)));
             } else {
-                contract.getTransactions().add(createTransaction(transactionRequest));
+                contract.getTransactions().add(createTransaction(transactionRequest,property));
             }
             Contract _contract = contractRepository.save(contract);
 
@@ -201,15 +204,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
 
-    public Transaction createTransaction(TransactionRequest transactionRequest) {
+    public Transaction createTransaction(TransactionRequest transactionRequest,Property property) {
         try {
             Transaction transaction = new Transaction();
             transaction.setPropertyId(new ObjectId(transactionRequest.getPropertyId()));
             transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
             transaction.setPaymentMethod(new ObjectId(transactionRequest.getPaymentMethod()));
-            transaction.setPaymentAmount(transactionRequest.getPaymentAmount());
+            transaction.setPaymentAmount(property.getPrice());
             transaction.setPaymentDate(commonUtils.getCurrentDate());
-            transaction.setAdminCommission(transactionRequest.getPaymentAmount() * 0.05);
+            transaction.setAdminCommission(property.getPrice() * 0.05);
             return transaction;
         } catch (Exception e) {
             throw new RuntimeException("Error while creating transaction");

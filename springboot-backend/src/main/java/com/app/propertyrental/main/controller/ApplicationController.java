@@ -55,9 +55,9 @@ public class ApplicationController {
     }
 
 
-    @GetMapping("/transaction/create")
-    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
-        return applicationService.createTransactionForProperty(transactionRequest);
+    @PatchMapping("/transaction/create")
+    public ResponseEntity<Transaction> createTransaction() {
+        return applicationService.createTransactionForCurrentProperty();
     }
 
 }
