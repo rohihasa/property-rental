@@ -1,13 +1,50 @@
-From: {{sender_name}} <{{sender_email}}>
-To: {{recipient_name}} <{{recipient_email}}>
-
-Subject: Great Deals Await!
-
-Hello {{recipient_name}},
-
-We're excited to let you know that we've got some great deals waiting for you!
-Visit our website at www.example.com to check out the latest offers.
-
-Best regards,
-Your Company
-=============================================================================================
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .email-header {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            color: black;
+        }
+        .email-content {
+            margin: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        .email-footer {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-header">
+        From: {{sender_name}} <{{sender_email}}>
+    </div>
+    <div class="email-content">
+        To: {{recipient_name}} <{{recipient_email}}>
+        <br>
+        Subject: {{user_name}} wants to send you a message
+        <br>
+        Email: {{user_email}}
+        <br><br>
+        Hello {{recipient_name}},
+        <br>
+        {{message}}
+    </div>
+    <div class="email-footer">
+        Best regards,
+        <br>
+        Property Rental
+    </div>
+</body>
+</html>

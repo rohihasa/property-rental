@@ -1,5 +1,6 @@
 package com.app.propertyrental.common.utils;
 
+import com.app.propertyrental.main.payload.request.EmailRequest;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -41,7 +42,6 @@ public class EmailService {
             String senderEmail = emailConfig.getProperty("sender.email");
             String senderName = emailConfig.getProperty("sender.name");
             String emailTemplate = loadEmailTemplate("src/main/resources/email_template.txt");
-
             Properties props = new Properties();
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", smtpPort);
@@ -65,9 +65,9 @@ public class EmailService {
         }
     }
 
-    public void sendEmails(Map<String, String> recipients,String personalMessage) {
+    public void sendEmails(EmailRequest emailRequest) {
         try{
-            for(Map.Entry<String, String> entry : recipients.entrySet()) {
+            for(Map.Entry<String, String> entry : emailRequest.getUserMap().entrySet()) {
                 String recipientEmail = entry.getKey();
                 String recipientName = entry.getValue();
 
@@ -76,7 +76,9 @@ public class EmailService {
                         .replace("{{sender_email}}", senderEmail)
                         .replace("{{recipient_name}}", recipientName)
                         .replace("{{recipient_email}}", recipientEmail)
-                        .replace("{{message}}", personalMessage);
+                        .replace(" {{user_name}}",emailRequest.getSenderName())
+                        .replace("{{user_email}}", emailRequest.getSenderEmail())
+                        .replace("{{message}}", emailRequest.getMessage());
 
 
                 // Create a new message

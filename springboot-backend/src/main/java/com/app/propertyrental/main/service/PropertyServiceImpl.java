@@ -212,12 +212,14 @@ public class PropertyServiceImpl implements PropertyService {
             String UserId = commonUtils.getUserId().toString();
             User user = userRepository.findById(UserId).get();
             Property property = propertyRepository.findById(propertyId).get();
+            User owner = userRepository.findById(property.getOwnerId().toString()).get();
             if (user.getSavedProperties().contains(propertyId)) {
                 property.setSaved(true);
             }
             List<Review> reviews = reviewRepository.findByPropertyId(propertyId);
             property.setReviews(reviews);
             property.setApplied(hasUserAppliedForProperty(UserId, propertyId));
+            property.setOwnerDetails(owner);
             return ResponseEntity.ok(property);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -338,7 +340,7 @@ public class PropertyServiceImpl implements PropertyService {
             notification.setMessage(messageRequest.getMessage());
             notification.setCreatedAt(commonUtils.getCurrentDate());
             notification.setIsRead(false);
-            notificationService.sendNotification(notification, true);
+            notificationService.sendNotification(notification, true,commonUtils.getUserId().toString());
             return ResponseEntity.ok("Message sent successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");

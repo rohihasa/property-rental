@@ -7,6 +7,8 @@ import com.app.propertyrental.common.utils.EmailService;
 import com.app.propertyrental.main.models.Notification;
 //import com.app.propertyrental.main.repository.NotificationRepository;
 import com.app.propertyrental.main.models.Notification;
+import com.app.propertyrental.main.payload.request.EmailRequest;
+import com.app.propertyrental.main.payload.request.MessageRequest;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,14 +37,22 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotification(Notification notification, Boolean emailTrigger) {
+    public void sendNotification(Notification notification, Boolean emailTrigger,String sender) {
 //        ObjectId temp= commonUtils.getUserId();
         User user = userRepository.findById(notification.getReceiverId().toString()).get();
+        User senderUser = userRepository.findById(sender).get();
         notification.setId(new ObjectId().toString());
         if (emailTrigger) {
+
+
             HashMap<String, String> userMap = new HashMap<>();
             userMap.put(user.getEmail(), user.getUsername());
-            emailService.sendEmails(userMap, notification.getMessage());
+            EmailRequest emailRequest = new EmailRequest();
+            emailRequest.setUserMap(userMap);
+            emailRequest.setMessage(notification.getMessage());
+            emailRequest.setSenderEmail(senderUser.getEmail());
+            emailRequest.setSenderName(senderUser.getUsername());
+            emailService.sendEmails(emailRequest);
         }
         if (user.getNotifications() == null) {
             user.setNotifications(Collections.singletonList(notification));

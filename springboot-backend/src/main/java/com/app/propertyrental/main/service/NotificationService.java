@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface NotificationService {
-    void sendNotification(Notification notification, Boolean emailTrigger);
+    void sendNotification(Notification notification, Boolean emailTrigger,String sender);
     void markAsRead(String notificationId);
     void deleteNotification(String notificationId);
     ResponseEntity<List<Notification>> getNotifications(String userId);

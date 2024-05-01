@@ -20,7 +20,7 @@ public class NotificationController {
     @PostMapping("/")
     public void sendNotification(@RequestBody Notification notification, @RequestParam Boolean emailTrigger) {
 
-        notificationService.sendNotification(notification,emailTrigger);
+        notificationService.sendNotification(notification,emailTrigger,"");
     }
 
     @PatchMapping("/{notificationId}")

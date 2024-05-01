@@ -1,6 +1,7 @@
 package com.app.propertyrental.main.models.property;
 
 
+import com.app.propertyrental.common.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,4 +49,5 @@ public class Property {
     private boolean saved;
     private boolean applied;
     private List<Review> reviews;
+    private User ownerDetails;
 }
