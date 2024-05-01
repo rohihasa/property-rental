@@ -1,82 +1,142 @@
 import React from "react";
 import { useState } from "react";
-import axios from "axios";
-import styles from "./login.styles.module.css";
 import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import UserService from "../../services/UserService";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Box,
+  CircularProgress,
+} from "@material-ui/core";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    width: "700vh",
+    backgroundImage: `url(${require("../../static/images/bg.png")})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  formContainer: {
+    padding: theme.spacing(4),
+    backgroundColor: "rgba(255, 255, 255, 1)", // Updated transparency value
+    borderRadius: theme.spacing(2),
+    boxShadow: theme.shadows[3],
+  },
+  formTitle: {
+    marginBottom: theme.spacing(2),
+  },
+  formInput: {
+    marginBottom: theme.spacing(2),
+  },
+  formButton: {
+    marginTop: theme.spacing(2),
+  },
+  error: {
+    color: "red",
+    marginBottom: theme.spacing(2),
+  },
+}));
 
 function Login() {
-  const [data, setData] = useState({ username: "", password: "" });
-  const [error, setError] = useState("");
-  const headers = { 
-    'Content-Type': 'application/json',
-  }
+  const classes = useStyles();
 
-  const handleChange = ({ currentTarget: input }) => {
-    setData({ ...data, [input.name]: input.value });
+  const [data, setData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = ({ target }) => {
+    setData({ ...data, [target.name]: target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log("hello")
-      console.log(data)
-      const url = "http://localhost:8080/api/auth/signin";
-      const { data: res } = await axios.post(url, data,{headers: headers});
-      
-      console.log(res)
-      localStorage.setItem("token", res.data);
-      window.location = "/";
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setError(error.response.data.message);
-      }
-    }
+    setError("");
+    setLoading(true);
+    UserService.userLogin(data)
+      .then((response) => {
+        setLoading(false);
+        console.log("response:::::::", response);
+        const jwtToken = response.headers["x-jwt-token"];
+        console.log("jwtToken::::::", jwtToken);
+        localStorage.setItem("jwtToken", jwtToken);
+        const { role } = response.data;
+        localStorage.setItem("userDetails", JSON.stringify(response.data));
+        if (role === "ROLE_USER") {
+          window.location = "/user/home";
+        } else if (role === "ROLE_OWNER") {
+          window.location = "user/home";
+        } else if (role === "ROLE_ADMIN") {
+          window.location = "/admin";
+        } else {
+          console.error("Unknown role received from API:", role);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+        setError(error.message);
+        console.log("error:::::::", error);
+      });
   };
   return (
-    <div className={styles.login_container}>
-      <div className={styles.login_form_container}>
-        <div className={styles.left}>
-          <form className={styles.form_container} onSubmit={handleSubmit}>
-            <h1>Login to Your Account</h1>
-            <input
-              type="username"
-              placeholder="username"
-              name="username"
-              onChange={handleChange}
-              value={data.username}
-              required
-              className={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              onChange={handleChange}
-              value={data.password}
-              required
-              className={styles.input}
-            />
-            {error && <div className={styles.error_msg}>{error}</div>}
-            <button type="submit" className={styles.green_btn}>
-              Sing In
-            </button>
-          </form>
-        </div>
-        <div className={styles.right}>
-          <h1>New Here ?</h1>
-          <Link to="/signup">
-            <button type="button" className={styles.white_btn}>
-              Sing Up
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
+    <Container className={classes.container}>
+      <Grid container justify="center">
+        <Grid item xs={12} sm={6} md={4}>
+          <Box className={classes.formContainer}>
+          <Typography variant="h4">RENT-IT</Typography>
+            <Typography variant="h6" className={classes.formTitle}>
+              Login to Your Account
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                type="email"
+                label="Email"
+                name="email"
+                onChange={handleChange}
+                value={data.email}
+                required
+                fullWidth
+                className={classes.formInput}
+              />
+              <TextField
+                type="password"
+                label="Password"
+                name="password"
+                onChange={handleChange}
+                value={data.password}
+                required
+                fullWidth
+                className={classes.formInput}
+              />
+              {error && (
+                <Typography className={classes.error}>{error}</Typography>
+              )}
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                className={classes.formButton}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} /> : "Sign In"}
+              </Button>
+            </form>
+            <Typography variant="body1" align="center">
+              New Here? <Link to="/signup">Sign Up</Link>
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 

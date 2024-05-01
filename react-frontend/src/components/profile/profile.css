@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  display: flex;
+  z-index: 1;
+  /* Remove padding-top here */
+}
+
+.sidebar {
+  /* Your sidebar styles */
+  background-color: #ffffff;
+}
+
+.nav-bar {
+  background-color: #ffffff;
+  /* Your navbar styles */
+  z-index: 2; /* Set z-index to a higher value */
+}
+.content-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: scroll;
+  padding: 20px;
+  margin-left: 250px;
+}

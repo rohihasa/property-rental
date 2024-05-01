@@ -1,0 +1,96 @@
+.attachment-card {
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Adjust as needed */
+    padding: 110px;
+    margin-top:20px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* This adds the elevation */
+    display: column; /* This makes the child elements sit in a row */
+    justify-content: space-between; /* This places the buttons to the right */
+    align-items: center; /* This vertically centers the text and buttons */
+}   
+
+.attachment-card-wrapper {
+    width: 50%;
+}
+
+.attachment-text {
+    margin-bottom: 10; /* Remove the bottom margin since we're now using flexbox */
+}
+
+.attachment-button {
+    margin-right: 5px;
+    padding: 10px 15px; /* Add some padding */
+    border: none; /* Remove the default border */
+    border-radius: 5px; /* Add some border radius to make the buttons rounder */
+    cursor: pointer; /* Change the cursor when hovering over the buttons */
+    transition: background-color 0.3s ease; /* Add a transition for the hover effect */
+}
+
+.download-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.download-button:hover {
+    background-color: #45a049; /* Change the background color when hovering */
+}
+
+.view-button {
+    background-color: #008CBA;
+    color: white;
+}
+
+.view-button:hover {
+    background-color: #007B9A; /* Change the background color when hovering */
+}
+
+.attachment-card-1 {
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Adjust as needed */
+    padding: 20px;
+    width: 90px;
+    margin-top:20px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* This adds the elevation */
+    display: column; /* This makes the child elements sit in a row */
+    justify-content: space-between; /* This places the buttons to the right */
+    align-items: center; /* This vertically centers the text and buttons */
+}   
+
+.attachment-card-wrapper-1 {
+    width: 50%;
+}
+
+.attachment-text-1 {
+    margin-bottom: 10; /* Remove the bottom margin since we're now using flexbox */
+}
+
+.attachment-button-1 {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px 15px; /* Add some padding */
+    border: none; /* Remove the default border */
+    border-radius: 5px; /* Add some border radius to make the buttons rounder */
+    cursor: pointer; /* Change the cursor when hovering over the buttons */
+    transition: background-color 0.3s ease; /* Add a transition for the hover effect */
+}
+
+.download-button-1 {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.download-button-1:hover {
+    background-color: #45a049; /* Change the background color when hovering */
+}
+
+.view-button-1 {
+    background-color: #008CBA;
+    color: white;
+}
+
+.view-button-1:hover {
+    background-color: #007B9A; /* Change the background color when hovering */
+}

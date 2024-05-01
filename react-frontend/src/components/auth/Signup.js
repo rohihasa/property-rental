@@ -1,99 +1,284 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./signup.styles.module.css";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import CircularProgress from "@mui/material/CircularProgress";
+import UserService from "../../services/UserService";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundImage: `url(${require("../../static/images/bg.png")})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  },
+  card: {
+    width: "60%",
+    maxWidth: 800,
+  },
+}));
 
 const Signup = () => {
-	const [data, setData] = useState({
-		firstName: "",
-		lastName: "",
-		email: "",
-		password: "",
-	});
-	const [error, setError] = useState("");
-	const navigate = useNavigate();
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    role: "",
+    password: "",
+    profileImage: "",
+    additionalDetails: {
+      firstName: "",
+      lastName: "",
+      contactDetails: {
+        phoneNumber: "",
+        secondaryPhone: "",
+        address: {
+          address: "",
+          city: "",
+          state: "",
+          zipCode: "",
+          country: "",
+        },
+        city: "",
+      },
+    },
+  });
 
-	const handleChange = ({ currentTarget: input }) => {
-		setData({ ...data, [input.name]: input.value });
-	};
+  const handleSubmit = async (e) => {
+    console.log(data);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    UserService.userSignup(data)
+      .then((response) => {
+        setLoading(false);
+        alert("Account created successfully"); // Show a popup
+        navigate("/login"); // Navigate to "/signin"
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
+  };
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			const url = "http://localhost:8080/api/users";
-			const { data: res } = await axios.post(url, data);
-			navigate("/login");
-			console.log(res.message);
-		} catch (error) {
-			if (
-				error.response &&
-				error.response.status >= 400 &&
-				error.response.status <= 500
-			) {
-				setError(error.response.data.message);
-			}
-		}
-	};
+  const handleChange = (path, value) => {
+    setData((prevState) => {
+      const newState = { ...prevState };
+      let keyPath = path.split(".");
+      let lastKey = keyPath.pop();
+      keyPath.reduce((nestedObject, key) => {
+        if (!nestedObject[key]) nestedObject[key] = {};
+        return nestedObject[key];
+      }, newState)[lastKey] = value;
+      return newState;
+    });
+  };
 
-	return (
-		<div className={styles.signup_container}>
-			<div className={styles.signup_form_container}>
-				<div className={styles.left}>
-					<h1>Welcome Back</h1>
-					<Link to="/login">
-						<button type="button" className={styles.white_btn}>
-							Sing in
-						</button>
-					</Link>
-				</div>
-				<div className={styles.right}>
-					<form className={styles.form_container} onSubmit={handleSubmit}>
-						<h1>Create Account</h1>
-						<input
-							type="text"
-							placeholder="First Name"
-							name="firstName"
-							onChange={handleChange}
-							value={data.firstName}
-							required
-							className={styles.input}
-						/>
-						<input
-							type="text"
-							placeholder="Last Name"
-							name="lastName"
-							onChange={handleChange}
-							value={data.lastName}
-							required
-							className={styles.input}
-						/>
-						<input
-							type="email"
-							placeholder="Email"
-							name="email"
-							onChange={handleChange}
-							value={data.email}
-							required
-							className={styles.input}
-						/>
-						<input
-							type="password"
-							placeholder="Password"
-							name="password"
-							onChange={handleChange}
-							value={data.password}
-							required
-							className={styles.input}
-						/>
-						{error && <div className={styles.error_msg}>{error}</div>}
-						<button type="submit" className={styles.green_btn}>
-							Sing Up
-						</button>
-					</form>
-				</div>
-			</div>
-		</div>
-	);
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setData({ ...data, profileImage: reader.result });
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <Box className={classes.root}>
+      <Card className={classes.card}>
+        <CardContent>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <Box sx={{ p: 2, m: 2 }}>
+              <Typography style={{ marginLeft: "150px" }} variant="h4">
+                WELCOME TO RENT-IT
+              </Typography>
+              <Typography style={{ marginLeft: "177px" }} variant="h6">
+                Please Create Account to Continue!
+              </Typography>
+              {loading && <CircularProgress />}
+              <TextField
+                required
+                id="username"
+                label="Username"
+                onChange={(e) => handleChange("username", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="email"
+                label="Email"
+                onChange={(e) => handleChange("email", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="password"
+                label="Password"
+                type="password"
+                onChange={(e) => handleChange("password", e.target.value)}
+                sx={{ mb: 2 }}
+              />
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <TextField
+                required
+                id="firstName"
+                label="First Name"
+                onChange={(e) =>
+                  handleChange("additionalDetails.firstName", e.target.value)
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="lastName"
+                label="Last Name"
+                onChange={(e) =>
+                  handleChange("additionalDetails.lastName", e.target.value)
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="phoneNumber"
+                label="Phone Number"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.phoneNumber",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                id="secondaryPhone"
+                label="Secondary Phone"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.secondaryPhone",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <TextField
+                required
+                id="address"
+                label="Address"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.address",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="city"
+                label="City"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.city",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="state"
+                label="State"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.state",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="zipCode"
+                label="Zip Code"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.zipCode",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                required
+                id="country"
+                label="Country"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.contactDetails.address.country",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <div
+                style={{
+                  marginTop: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <span>choose profile image</span>
+                <input type="file" onChange={handleImageUpload} />
+              </div>  
+
+                
+
+            </Box>
+            <Box sx={{ p: 2, m: 2 }}>
+              <Button onClick={handleSubmit} variant="contained">
+                SIGN UP
+              </Button>
+            </Box>
+          </Box>
+          <Box sx={{ p: 2, m: 2 }}>
+            <Typography variant="body1" className={classes.error}>
+              {error}
+            </Typography>
+            <Typography variant="h6">
+              Already have an account? <Link to="/login">LOG IN</Link>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
+  );
 };
 
 export default Signup;

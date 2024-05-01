@@ -1,9 +1,28 @@
-import axios from 'axios';
+import axios from "axios";
 
-export default axios.create({
-    baseURL:'http://localhost:8080/api/food',
-    headers:{
-        'Content-Type':'application/json',
-        'Cookie': 'bezkoder=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2QyMkBnbWFpbC5jb20iLCJpYXQiOjE3MDYzNjM0ODAsImV4cCI6MTcwNjQ0OTg4MH0.XPXcKjhT4bgw6ido5G3hz1baIUJuMGAeG9Td0FPOuPI'
-    }
+const httpClient = axios.create({
+  baseURL: "http://localhost:8080/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+httpClient.interceptors.request.use(
+  (config) => {
+    let jwtToken = localStorage.getItem("jwtToken");
+
+    if (jwtToken) {
+      jwtToken = jwtToken.substring(7);
+      jwtToken = jwtToken.split(";")[0];
+      config.headers.Authorization = jwtToken;
+    } else {
+      config.headers.Authorization = "Bearer=";
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default httpClient;
