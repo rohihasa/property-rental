@@ -155,11 +155,11 @@ function ListingsPage() {
         console.log(error);
         alert("Error Sending Application");
       });
-  }
+  };
   useEffect(() => {
     UserService.getUserById(userDetails.id)
       .then((response) => {
-        console.log("USERrrrrrr",response.data);
+        console.log("USERrrrrrr", response.data);
         setRole(response.data.roles[0]);
         setVerified(response.data.verified);
       })
@@ -169,7 +169,7 @@ function ListingsPage() {
     setLoading(true); // Set loading to true before the API call
     UserService.getListedProperties()
       .then((response) => {
-        console.log("LISTED::::",response.data);
+        console.log("LISTED::::", response.data);
         setLoading(false); // Set loading to false after the API call
         console.log(response.data);
         setData(response.data);
@@ -183,9 +183,13 @@ function ListingsPage() {
   return (
     <div>
       {loading && <CircularProgress />}
-      {role==="ROLE_OWNER"&&!verified&&<h1>Verification By Admin is In Progress</h1>}
-      {role==="ROLE_USER" && <h1>Apply for Owner to list your properties</h1>}
-      {role==="ROLE_OWNER"&&verified&&data &&
+      {role === "ROLE_OWNER" && !verified && (
+        <h1>Verification By Admin is In Progress</h1>
+      )}
+      {role === "ROLE_USER" && <h1>Apply for Owner to list your properties</h1>}
+      {role === "ROLE_OWNER" &&
+        verified &&
+        data &&
         data.map((item) => (
           <CardForManageProperties key={item.id} item={item} />
         ))}
@@ -193,7 +197,9 @@ function ListingsPage() {
       {role === "ROLE_OWNER" && verified && (
         <Button onClick={handleClickOpen}>Post New Property</Button>
       )}
-       {role==="ROLE_USER" && <Button onClick={handleApplyToOwer}>Apply for Owner</Button>} 
+      {role === "ROLE_USER" && (
+        <Button onClick={handleApplyToOwer}>Apply for Owner</Button>
+      )}
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Post New Property</DialogTitle>
@@ -466,7 +472,7 @@ function ListingsPage() {
                       ...propertyPostRequest,
                       propertyDetails: {
                         ...propertyPostRequest.propertyDetails,
-                        leaseStart: event.target.value,
+                        leaseStartDate: event.target.value,
                       },
                     })
                   }
@@ -489,7 +495,7 @@ function ListingsPage() {
                       ...propertyPostRequest,
                       propertyDetails: {
                         ...propertyPostRequest.propertyDetails,
-                        leaseEnd: event.target.value,
+                        leaseEndDate: event.target.value,
                       },
                     })
                   }
@@ -514,7 +520,7 @@ function ListingsPage() {
                       ...propertyPostRequest,
                       propertyDetails: {
                         ...propertyPostRequest.propertyDetails,
-                        deadline: event.target.value,
+                        applicationDeadline: event.target.value,
                       },
                     })
                   }

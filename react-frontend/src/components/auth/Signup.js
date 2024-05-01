@@ -14,7 +14,7 @@ import UserService from "../../services/UserService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundImage:`url(${require("../../static/images/bg.png")})`,
+    backgroundImage: `url(${require("../../static/images/bg.png")})`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "100%",
     display: "flex",
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const Signup = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState({
     username: "",
@@ -90,11 +90,11 @@ const Signup = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-  
+
     reader.onloadend = () => {
       setData({ ...data, profileImage: reader.result });
     };
-  
+
     if (file) {
       reader.readAsDataURL(file);
     }
@@ -113,8 +113,12 @@ const Signup = () => {
             autoComplete="off"
           >
             <Box sx={{ p: 2, m: 2 }}>
-              <Typography style={{marginLeft:"150px"}} variant="h4">WELCOME TO RENT-IT</Typography>
-              <Typography style={{marginLeft:"177px"}}  variant="h6">Please Create Account to Continue!</Typography>
+              <Typography style={{ marginLeft: "150px" }} variant="h4">
+                WELCOME TO RENT-IT
+              </Typography>
+              <Typography style={{ marginLeft: "177px" }} variant="h6">
+                Please Create Account to Continue!
+              </Typography>
               {loading && <CircularProgress />}
               <TextField
                 required
@@ -243,14 +247,25 @@ const Signup = () => {
                 }
                 sx={{ mb: 2 }}
               />
-              <input type="file" onChange={handleImageUpload} />
+              <div
+                style={{
+                  marginTop: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <span>choose profile image</span>
+                <input type="file" onChange={handleImageUpload} />
+              </div>  
+
+                
+
             </Box>
             <Box sx={{ p: 2, m: 2 }}>
-              <Button 
-              onClick={handleSubmit}
-              variant="contained">SIGN UP</Button>
+              <Button onClick={handleSubmit} variant="contained">
+                SIGN UP
+              </Button>
             </Box>
-
           </Box>
           <Box sx={{ p: 2, m: 2 }}>
             <Typography variant="body1" className={classes.error}>
