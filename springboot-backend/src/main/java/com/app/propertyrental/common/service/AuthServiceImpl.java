@@ -110,8 +110,11 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setSavedProperties(List.of());
         user.setOwnedProperties(List.of());
+        user.setDob(signUpRequest.getAdditionalDetails().getDob());
+        user.setSsn(signUpRequest.getAdditionalDetails().getSsn());
         user.setIdentityProof("");
         user.setCreditReport("");
+
         User _user = userRepository.save(user);
 
         if (signUpRequest.getRole().equalsIgnoreCase("admin")) {

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class AdditionalDetails {
     private String firstName;
     private String lastName;
+    private String dob;
+    private  String ssn;
     private ContactDetails contactDetails;
     private String createdAt;
     private String updatedAt;

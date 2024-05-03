@@ -45,6 +45,10 @@ public class User {
 
   private  String lastName;
 
+  private String dob;
+
+  private String ssn;
+
   private ContactDetails contactDetails;
 
   private String profileImage;
