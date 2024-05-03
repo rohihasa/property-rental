@@ -12,7 +12,7 @@ const Sidebar = ({ onItemClick }) => {
             <ListItem
               sx={{
                 margin: "10px",
-                padding: "100px",
+                padding: "10px",
                 backgroundColor: "#f5f5f5", // Change this to your desired color
                 "&:hover": {
                   backgroundColor: "#e0e0e0", // Change this to your desired color
