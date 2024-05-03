@@ -42,4 +42,6 @@ public interface UserService {
     ResponseEntity<ReportResponse> patchReports(ReportResponse reportResponse);
 
     ResponseEntity<AdminDashboardResponse> getAdminDashboard();
+
+    ResponseEntity<?> revertStatus(String userId);
 }

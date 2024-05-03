@@ -161,6 +161,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             transaction.setPaymentMethod(contract.getPaymentId());
             transaction.setPaymentAmount(_transaction.getPaymentAmount());
             transaction.setPaymentDate(commonUtils.getCurrentDate());
+            transaction.setUserId(commonUtils.getUserId());
             transaction.setAdminCommission(_transaction.getPaymentAmount() * 0.05);
 
             // Find the contract associated with the property
@@ -243,6 +244,22 @@ public class ApplicationServiceImpl implements ApplicationService {
             // Retrieve all transactions from all contracts
             List<Transaction> transactions = contracts.stream()
                     .flatMap(contract -> contract.getTransactions().stream())
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Transaction>> getAllUserTranscrions() {
+        try{
+            ObjectId currentUser= commonUtils.getUserId();
+            List<Contract> contracts = contractRepository.findAll();
+            // Retrieve all transactions from all contracts
+            List<Transaction> transactions = contracts.stream()
+                    .flatMap(contract -> contract.getTransactions().stream())
+                    .filter(transaction -> transaction.getUserId().equals(currentUser))
                     .collect(Collectors.toList());
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {

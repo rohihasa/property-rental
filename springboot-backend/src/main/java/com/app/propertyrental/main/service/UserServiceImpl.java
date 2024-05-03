@@ -189,8 +189,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<List<User>> getPendingUsers() {
         try {
-
-            return ResponseEntity.ok(userRepository.findByVerified(false));
+            List<User> users= userRepository.findAll();
+            users=users.stream().filter(User::isAppliedForOwner).collect(Collectors.toList());
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -233,6 +234,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(commonUtils.getUserId().toString()).get();
         user.setRoles(Set.of(ERole.ROLE_OWNER));
         user.setVerified(false);
+        user.setAppliedForOwner(true);
         userRepository.save(user);
         return ResponseEntity.ok("Applied for Owner waiting for admin approval");
     } catch (Exception e) {
@@ -293,6 +295,27 @@ public class UserServiceImpl implements UserService {
 
             return ResponseEntity.ok(adminDashboardResponse);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> revertStatus(String userId) {
+        try{
+            User user= userRepository.findById(userId).get();
+            if(user.getRoles().contains(ERole.ROLE_USER) && user.isAppliedForOwner()){
+                user.getRoles().remove(ERole.ROLE_USER);
+                user.getRoles().add(ERole.ROLE_OWNER);
+                user.setVerified(true);
+            }else if(user.getRoles().contains(ERole.ROLE_OWNER) && user.isVerified()){
+                user.getRoles().remove(ERole.ROLE_OWNER);
+                user.getRoles().add(ERole.ROLE_USER);
+                user.setVerified(true);
+            }
+             userRepository.save(user);
+            return ResponseEntity.ok(true);
+
+        }catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }

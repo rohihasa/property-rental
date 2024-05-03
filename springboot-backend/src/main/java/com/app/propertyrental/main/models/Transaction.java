@@ -18,6 +18,7 @@ public class Transaction {
     @Id
     private String id;
     private ObjectId propertyId;
+    private ObjectId userId;
     private ObjectId applicationId;
     private ObjectId paymentMethod;
     private String paymentStatus;

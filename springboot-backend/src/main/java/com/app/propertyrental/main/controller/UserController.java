@@ -76,6 +76,9 @@ public class UserController {
         return userService.getPendingUsers();
     }
 
+
+
+
     @GetMapping("/savedProperties")
     public ResponseEntity<List<Property>> getSavedPropertiesForUser() {
         return userService.getSavedPropertiesForUser();
@@ -100,6 +103,10 @@ public class UserController {
         return userService.approveUser(userId, status);
     }
 
+    @PatchMapping("/status/{userId}")
+    public ResponseEntity<?> revertStatus(@PathVariable("userId") String userId){
+        return userService.revertStatus(userId);
+    }
 
     @GetMapping("/adminDashboard")
     @PreAuthorize("hasRole('ADMIN')")

@@ -32,4 +32,5 @@ public interface ApplicationService {
 
     ResponseEntity<List<Transaction>> getAllTransactions();
 
+    ResponseEntity<List<Transaction>> getAllUserTranscrions();
 }

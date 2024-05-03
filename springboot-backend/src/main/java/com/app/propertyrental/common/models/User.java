@@ -62,6 +62,7 @@ public class User {
   private String identityProof;
 
   private String creditReport;
+  private boolean appliedForOwner;
 
   private Property currentProperty;
 

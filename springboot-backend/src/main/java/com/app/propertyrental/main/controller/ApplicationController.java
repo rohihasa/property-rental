@@ -54,6 +54,11 @@ public class ApplicationController {
         return applicationService.getAllTransactions();
     }
 
+    @GetMapping("/user/transactions")
+    public ResponseEntity<List<Transaction>> getAllUserTransactions(){
+        return applicationService.getAllUserTranscrions();
+    }
+
 
     @PatchMapping("/transaction/create")
     public ResponseEntity<Transaction> createTransaction() {
