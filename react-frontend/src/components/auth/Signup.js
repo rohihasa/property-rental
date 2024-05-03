@@ -42,6 +42,8 @@ const Signup = () => {
     additionalDetails: {
       firstName: "",
       lastName: "",
+      dob: "",
+      ssn: "",
       contactDetails: {
         phoneNumber: "",
         secondaryPhone: "",
@@ -62,16 +64,17 @@ const Signup = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    UserService.userSignup(data)
-      .then((response) => {
-        setLoading(false);
-        alert("Account created successfully"); // Show a popup
-        navigate("/login"); // Navigate to "/signin"
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-      });
+    console.log(data);
+    // UserService.userSignup(data)
+    //   .then((response) => {
+    //     setLoading(false);
+    //     alert("Account created successfully"); // Show a popup
+    //     navigate("/login"); // Navigate to "/signin"
+    //   })
+    //   .catch((error) => {
+    //     setLoading(false);
+    //     setError(error.message);
+    //   });
   };
 
   const handleChange = (path, value) => {
@@ -142,6 +145,18 @@ const Signup = () => {
                 onChange={(e) => handleChange("password", e.target.value)}
                 sx={{ mb: 2 }}
               />
+
+              <TextField
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                sx={{
+                  mb: 2,
+                  width: '100%', // Full width
+                  backgroundColor: '#fff', // White background
+                  borderRadius: '4px', // Rounded corners
+                }}
+              />
             </Box>
             <Box sx={{ p: 2, m: 2 }}>
               <TextField
@@ -180,6 +195,29 @@ const Signup = () => {
                 onChange={(e) =>
                   handleChange(
                     "additionalDetails.contactDetails.secondaryPhone",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+         
+              <TextField
+                id="dob"
+                label="Date of birth (dd-mm-yyyy)"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.dob",
+                    e.target.value
+                  )
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                id="ssn"
+                label="ssn number"
+                onChange={(e) =>
+                  handleChange(
+                    "additionalDetails.ssn",
                     e.target.value
                   )
                 }
@@ -256,9 +294,9 @@ const Signup = () => {
               >
                 <span>choose profile image</span>
                 <input type="file" onChange={handleImageUpload} />
-              </div>  
+              </div>
 
-                
+
 
             </Box>
             <Box sx={{ p: 2, m: 2 }}>

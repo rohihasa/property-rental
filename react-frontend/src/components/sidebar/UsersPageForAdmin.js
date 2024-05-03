@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import UserService from '../../services/UserService';
-import { set } from 'mongoose';
 
 function UsersPageForAdmin() {
   // Replace this with actual data

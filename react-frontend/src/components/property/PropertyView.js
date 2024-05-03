@@ -20,7 +20,6 @@ import {
   Button,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { set } from "firebase/database";
 
 function PropertyView() {
   const { propertyId } = useParams();
