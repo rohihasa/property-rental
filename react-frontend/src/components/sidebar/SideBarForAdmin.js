@@ -2,7 +2,7 @@ import React from "react";
 import { Drawer, List, ListItem, ListItemText, Typography } from "@mui/material";
 
 const SidebarForAdmin = ({ onItemClick }) => {
-  const menuItems = ["DashBoard", "Owners", "Properties","Logout"];
+  const menuItems = ["DashBoard", "Owners", "Properties","Transactions","Logout"];
 
   return (
     <div>

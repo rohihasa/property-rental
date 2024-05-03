@@ -100,6 +100,10 @@ const payRent = (transactionRequest) => {
   return httpClient.patch(`/applications/transaction/create`);
 };
 
+const getAllTransactions=()=>{
+  return httpClient.get("/applications/transactions");
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   userLogin,
@@ -122,5 +126,6 @@ export default {
   getAllPendingProperties,
   approveOrRejectProperty,
   reviewProperty,
-  payRent
+  payRent,
+  getAllTransactions
 };
