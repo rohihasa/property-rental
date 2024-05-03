@@ -278,21 +278,47 @@ public ResponseEntity<List<TransactionRespose>> getAllTransactions() {
     }
 }
 
-    @Override
-    public ResponseEntity<List<Transaction>> getAllUserTranscrions() {
-        try{
-            ObjectId currentUser= commonUtils.getUserId();
-            List<Contract> contracts = contractRepository.findAll();
-            // Retrieve all transactions from all contracts
-            List<Transaction> transactions = contracts.stream()
-                    .flatMap(contract -> contract.getTransactions().stream())
-                    .filter(transaction -> transaction.getUserId().equals(currentUser))
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(transactions);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+   @Override
+public ResponseEntity<List<TransactionRespose>> getAllUserTranscrions() {
+    try {
+        ObjectId currentUser = commonUtils.getUserId();
+        List<Contract> contracts = contractRepository.findAll();
+        List<TransactionRespose> transactionResponses = new ArrayList<>();
+
+        for (Contract contract : contracts) {
+            for (Transaction transaction : contract.getTransactions()) {
+                if (transaction.getUserId().equals(currentUser)) {
+                    TransactionRespose transactionResponse = new TransactionRespose();
+                    transactionResponse.setId(new ObjectId().toString());
+
+                    // Query propertyRepository and userRepository to get name and username
+                    Property property = propertyRepository.findById(transaction.getPropertyId().toString()).get();
+                    User user = userRepository.findById(contract.getUserId().toString()).get();
+
+                    transactionResponse.setPropertyId(property.getName());
+                    transactionResponse.setUserId(user.getUsername());
+
+                    transactionResponse.setApplicationId(contract.getApplicationId().toString());
+                    transactionResponse.setPaymentMethod(transaction.getPaymentMethod().toString());
+                    transactionResponse.setPaymentStatus("success"); // default status
+                    transactionResponse.setAmount(transaction.getPaymentAmount());
+                    transactionResponse.setPaymentDate(transaction.getPaymentDate().toString());
+
+                    // Round admin commission to 2 decimal places
+                    double adminCommission = transaction.getAdminCommission();
+                    adminCommission = Math.round(adminCommission * 100.0) / 100.0;
+//                    transactionResponse.setAdminCommission(String.valueOf(adminCommission));
+                transactionResponse.setAdminCommission("Not available");
+                    transactionResponses.add(transactionResponse);
+                }
+            }
         }
+
+        return ResponseEntity.ok(transactionResponses);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
     }
+}
 
     private  List<ApplicationResponse> getApplicationResponses(List<Application> applications) {
         return applications.stream()

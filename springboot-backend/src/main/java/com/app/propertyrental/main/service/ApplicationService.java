@@ -33,5 +33,5 @@ public interface ApplicationService {
 
     ResponseEntity<List<TransactionRespose>> getAllTransactions();
 
-    ResponseEntity<List<Transaction>> getAllUserTranscrions();
+    ResponseEntity<List<TransactionRespose>> getAllUserTranscrions();
 }

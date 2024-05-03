@@ -56,7 +56,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/user/transactions")
-    public ResponseEntity<List<Transaction>> getAllUserTransactions(){
+    public ResponseEntity<List<TransactionRespose>> getAllUserTransactions(){
         return applicationService.getAllUserTranscrions();
     }
 
