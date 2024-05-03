@@ -46,6 +46,7 @@ function ListingsPage() {
       street: "",
       city: "",
       zipCode: "",
+      state:""
     },
     description: null,
     bedrooms: 0,
@@ -266,6 +267,22 @@ function ListingsPage() {
                       address: {
                         ...propertyPostRequest.address,
                         city: event.target.value,
+                      },
+                    })
+                  }
+                />
+                 <TextField
+                  required
+                  style={{ margin: "10px 0" }}
+                  label="State"
+                  fullWidth
+                  value={propertyPostRequest.address.state}
+                  onChange={(event) =>
+                    setPropertyPostRequest({
+                      ...propertyPostRequest,
+                      address: {
+                        ...propertyPostRequest.address,
+                        state: event.target.value,
                       },
                     })
                   }

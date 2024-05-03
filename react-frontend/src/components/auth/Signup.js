@@ -64,17 +64,17 @@ const Signup = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    console.log(data);
-    // UserService.userSignup(data)
-    //   .then((response) => {
-    //     setLoading(false);
-    //     alert("Account created successfully"); // Show a popup
-    //     navigate("/login"); // Navigate to "/signin"
-    //   })
-    //   .catch((error) => {
-    //     setLoading(false);
-    //     setError(error.message);
-    //   });
+    // console.log(data);
+    UserService.userSignup(data)
+      .then((response) => {
+        setLoading(false);
+        alert("Account created successfully"); // Show a popup
+        navigate("/login"); // Navigate to "/signin"
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error.message);
+      });
   };
 
   const handleChange = (path, value) => {

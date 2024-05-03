@@ -195,14 +195,14 @@ function PropertyView() {
                   $ {singlePostData && singlePostData.price}
                 </div>
               </div>
-              <div className="user">
+              {/* <div className="user">
                 {userData && (
                   <>
                    {singlePostData.ownerDetails&& <img src={`${singlePostData.ownerDetails.profileImage}`} alt="" />}
-                    <span>{singlePostData.ownerDetails.username  }</span>
+                    <span>{singlePostData.ownerDetails.username}</span>
                   </>
                 )}
-              </div>
+              </div> */}
             </div>
             <div className="bottom">
               {singlePostData && singlePostData.description}

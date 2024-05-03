@@ -74,6 +74,11 @@ const getPendingOwners = () => {
   return httpClient.get("/user/pending");
 };
 
+const patchPendingowners = (userId) => {
+  return httpClient.get(`/user/${userId}`);
+};
+
+
 const approveOrRejectOwner = (action, userId) => {
   return httpClient.patch(`/user/approveUser/${userId}/${action}`);
 }
