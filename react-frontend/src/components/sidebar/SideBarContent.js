@@ -4,6 +4,7 @@ import OrdersPage from './OrdersPage'
 import ListingsPage from './ListingsPage'
 import ApplicationsPage from './ApplicationsPage'
 import SavedPage from './SavedPage'
+import TransactionsForUser from './TransactionsForUser'
 
 function SideBarContent({selectedMenu}) {
     let Component;
@@ -19,6 +20,9 @@ function SideBarContent({selectedMenu}) {
             break;
         case 3:
             Component = SavedPage;
+            break;
+        case 4:
+            Component = TransactionsForUser; // Make sure to import this at the top
             break;
         default:
             Component = ProfilePage;

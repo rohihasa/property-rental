@@ -104,6 +104,10 @@ const getAllTransactions=()=>{
   return httpClient.get("/applications/transactions");
 }
 
+const getAllUserTransactions=()=>{
+  return httpClient.get("/applications/user/transactions");
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   userLogin,
@@ -127,5 +131,6 @@ export default {
   approveOrRejectProperty,
   reviewProperty,
   payRent,
-  getAllTransactions
+  getAllTransactions,
+  getAllUserTransactions
 };

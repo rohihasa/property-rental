@@ -2,7 +2,7 @@ import React from "react";
 import { Drawer, List, ListItem, ListItemText } from "@mui/material";
 
 const Sidebar = ({ onItemClick }) => {
-  const menuItems = ["Profile", "Listings", "Applications", "Saved"];
+  const menuItems = ["Profile", "Listings", "Applications", "Saved","Transactions"];
 
   return (
     <div>
