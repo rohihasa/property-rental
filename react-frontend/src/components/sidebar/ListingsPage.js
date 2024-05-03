@@ -46,7 +46,7 @@ function ListingsPage() {
       street: "",
       city: "",
       zipCode: "",
-      state:""
+      state: "",
     },
     description: null,
     bedrooms: 0,
@@ -67,6 +67,7 @@ function ListingsPage() {
   });
   const [loading, setLoading] = useState(false);
   const [role, setRole] = React.useState("");
+  const [user, setUser] = React.useState("");
   const [optionInput, setOptionInput] = useState("");
   const [verified, setVerified] = React.useState(false);
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
@@ -162,6 +163,7 @@ function ListingsPage() {
       .then((response) => {
         console.log("USERrrrrrr", response.data);
         setRole(response.data.roles[0]);
+        setUser(response.data);
         setVerified(response.data.verified);
       })
       .catch((error) => {
@@ -187,7 +189,12 @@ function ListingsPage() {
       {role === "ROLE_OWNER" && !verified && (
         <h1>Verification By Admin is In Progress</h1>
       )}
-      {role === "ROLE_USER" && <h1>Apply for Owner to list your properties</h1>}
+      {role === "ROLE_USER" && user.appliedForOwner && (
+        <h1>You have Already submitted application</h1>
+      )}
+      {role === "ROLE_USER" && !user.appliedForOwner && (
+        <h1>Apply for Owner to list your properties</h1>
+      )}
       {role === "ROLE_OWNER" &&
         verified &&
         data &&
@@ -198,7 +205,7 @@ function ListingsPage() {
       {role === "ROLE_OWNER" && verified && (
         <Button onClick={handleClickOpen}>Post New Property</Button>
       )}
-      {role === "ROLE_USER" && (
+      {role === "ROLE_USER" && !user.appliedForOwner && (
         <Button onClick={handleApplyToOwer}>Apply for Owner</Button>
       )}
 
@@ -271,7 +278,7 @@ function ListingsPage() {
                     })
                   }
                 />
-                 <TextField
+                <TextField
                   required
                   style={{ margin: "10px 0" }}
                   label="State"

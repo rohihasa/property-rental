@@ -43,15 +43,15 @@ function TransactionsForAdmin() {
             <TableBody>
               {transactions &&
                 transactions.map((transaction) => (
-                  <TableRow key={transaction.propertyId}>
+                  <TableRow key={transaction.id}>
                     <TableCell>{transaction.propertyId}</TableCell>
                     <TableCell>{transaction.userId}</TableCell>
                     <TableCell>{transaction.applicationId}</TableCell>
                     <TableCell>{transaction.paymentMethod}</TableCell>
                     <TableCell>{transaction.paymentStatus}</TableCell>
-                    <TableCell>{transaction.paymentAmount}</TableCell>
+                    <TableCell>{transaction.amount}</TableCell>
                     <TableCell>{transaction.paymentDate}</TableCell>
-                    <TableCell>{transaction.paymentCommission}</TableCell>
+                    <TableCell>{transaction.adminCommission}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
