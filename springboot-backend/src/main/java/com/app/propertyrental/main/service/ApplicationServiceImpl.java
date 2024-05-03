@@ -1,12 +1,14 @@
 package com.app.propertyrental.main.service;
 
 
+import com.app.propertyrental.common.models.User;
 import com.app.propertyrental.common.repository.UserRepository;
 import com.app.propertyrental.common.utils.CommonUtils;
 import com.app.propertyrental.main.models.*;
 import com.app.propertyrental.main.models.property.Property;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
 import com.app.propertyrental.main.payload.response.ApplicationResponse;
+import com.app.propertyrental.main.payload.response.TransactionRespose;
 import com.app.propertyrental.main.repository.ApplicationRepository;
 import com.app.propertyrental.main.repository.ContractRepository;
 import com.app.propertyrental.main.repository.PaymentRepository;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -236,20 +239,44 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
-    @Override
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        try {
-            // Retrieve all contracts
-            List<Contract> contracts = contractRepository.findAll();
-            // Retrieve all transactions from all contracts
-            List<Transaction> transactions = contracts.stream()
-                    .flatMap(contract -> contract.getTransactions().stream())
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(transactions);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+  @Override
+public ResponseEntity<List<TransactionRespose>> getAllTransactions() {
+    try {
+        List<Contract> contracts = contractRepository.findAll();
+        List<TransactionRespose> transactionResponses = new ArrayList<>();
+
+        for (Contract contract : contracts) {
+            for (Transaction transaction : contract.getTransactions()) {
+                TransactionRespose transactionResponse = new TransactionRespose();
+                transactionResponse.setId(new ObjectId().toString());
+
+                // Query propertyRepository and userRepository to get name and username
+                Property property = propertyRepository.findById(transaction.getPropertyId().toString()).get();
+                User user = userRepository.findById(contract.getUserId().toString()).get();
+
+                transactionResponse.setPropertyId(property.getName());
+                transactionResponse.setUserId(user.getUsername());
+
+                transactionResponse.setApplicationId(contract.getApplicationId().toString());
+                transactionResponse.setPaymentMethod(transaction.getPaymentMethod().toString());
+                transactionResponse.setPaymentStatus("success"); // default status
+                transactionResponse.setAmount(transaction.getPaymentAmount());
+                transactionResponse.setPaymentDate(transaction.getPaymentDate().toString());
+
+                // Round admin commission to 2 decimal places
+                double adminCommission = transaction.getAdminCommission();
+                adminCommission = Math.round(adminCommission * 100.0) / 100.0;
+                transactionResponse.setAdminCommission(String.valueOf(adminCommission));
+
+                transactionResponses.add(transactionResponse);
+            }
         }
+
+        return ResponseEntity.ok(transactionResponses);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
     }
+}
 
     @Override
     public ResponseEntity<List<Transaction>> getAllUserTranscrions() {

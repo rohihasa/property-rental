@@ -7,6 +7,7 @@ import com.app.propertyrental.main.models.Transaction;
 import com.app.propertyrental.main.models.Contract;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
 import com.app.propertyrental.main.payload.response.ApplicationResponse;
+import com.app.propertyrental.main.payload.response.TransactionRespose;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface ApplicationService {
 
     ResponseEntity<List<Transaction>> getTransactionsByPropertyId(String applicationId);
 
-    ResponseEntity<List<Transaction>> getAllTransactions();
+    ResponseEntity<List<TransactionRespose>> getAllTransactions();
 
     ResponseEntity<List<Transaction>> getAllUserTranscrions();
 }

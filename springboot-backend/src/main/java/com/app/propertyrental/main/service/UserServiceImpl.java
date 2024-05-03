@@ -247,6 +247,7 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userRepository.findById(userId).get();
             if (status.equals("approve")) {
+                user.setRoles(Set.of(ERole.ROLE_OWNER));
                 user.setVerified(true);
                 userRepository.save(user);
                 return ResponseEntity.ok("User Approved");

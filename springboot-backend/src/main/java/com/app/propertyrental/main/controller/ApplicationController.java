@@ -6,6 +6,7 @@ import com.app.propertyrental.main.models.ApplicationStatus;
 import com.app.propertyrental.main.models.Transaction;
 import com.app.propertyrental.main.payload.request.TransactionRequest;
 import com.app.propertyrental.main.payload.response.ApplicationResponse;
+import com.app.propertyrental.main.payload.response.TransactionRespose;
 import com.app.propertyrental.main.service.ApplicationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +51,7 @@ public class ApplicationController {
 
     @GetMapping("/transactions")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
+    public ResponseEntity<List<TransactionRespose>> getAllTransactions() {
         return applicationService.getAllTransactions();
     }
 
